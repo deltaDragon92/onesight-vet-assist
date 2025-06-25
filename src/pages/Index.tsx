@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Camera, FileText, BookOpen, Clock, Play, Square, Save, MapPin } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -9,6 +10,7 @@ import UltrasoundExam from '@/components/UltrasoundExam';
 import ReportModule from '@/components/ReportModule';
 import TrainingModule from '@/components/TrainingModule';
 import PetOwnerPreview from '@/components/PetOwnerPreview';
+import DigitalTwin from '@/components/DigitalTwin';
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
@@ -46,7 +48,7 @@ const Index = () => {
       <div className="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-5 bg-slate-50 p-1 h-14">
+            <TabsList className="grid w-full grid-cols-6 bg-slate-50 p-1 h-14">
               <TabsTrigger 
                 value="dashboard" 
                 className="flex items-center space-x-2 text-sm font-medium data-[state=active]:bg-white data-[state=active]:text-blue-600 data-[state=active]:shadow-sm"
@@ -62,6 +64,13 @@ const Index = () => {
               >
                 <Camera className="w-5 h-5" />
                 <span className="hidden sm:inline">Esame Live</span>
+              </TabsTrigger>
+              <TabsTrigger 
+                value="digitaltwin" 
+                className="flex items-center space-x-2 text-sm font-medium data-[state=active]:bg-white data-[state=active]:text-blue-600 data-[state=active]:shadow-sm"
+              >
+                <div className="w-5 h-5 bg-gradient-to-r from-cyan-500 to-teal-500 rounded-full"></div>
+                <span className="hidden sm:inline">Gemello Digitale</span>
               </TabsTrigger>
               <TabsTrigger 
                 value="reports" 
@@ -91,6 +100,9 @@ const Index = () => {
             </TabsContent>
             <TabsContent value="exam" className="mt-0">
               <UltrasoundExam />
+            </TabsContent>
+            <TabsContent value="digitaltwin" className="mt-0">
+              <DigitalTwin />
             </TabsContent>
             <TabsContent value="reports" className="mt-0">
               <ReportModule />
