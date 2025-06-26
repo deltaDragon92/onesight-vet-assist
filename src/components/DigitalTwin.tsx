@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Heart, Activity, Thermometer, Scale, Eye, Stethoscope, Calendar, FileText, Download, Plus, RefreshCw, User } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -6,7 +7,7 @@ import { Badge } from '@/components/ui/badge';
 import { Separator } from '@/components/ui/separator';
 
 interface DigitalTwinProps {
-  onPatientSelected?: () => void;
+  onPatientSelected?: (patientName?: string) => void;
 }
 
 const DigitalTwin = ({ onPatientSelected }: DigitalTwinProps) => {
@@ -73,7 +74,7 @@ const DigitalTwin = ({ onPatientSelected }: DigitalTwinProps) => {
 
   const handleSelectPatient = () => {
     setSelectedPatient(patientData.name);
-    onPatientSelected?.();
+    onPatientSelected?.(patientData.name);
   };
 
   return (
@@ -95,9 +96,10 @@ const DigitalTwin = ({ onPatientSelected }: DigitalTwinProps) => {
             <Button 
               onClick={handleSelectPatient}
               className="bg-gradient-to-r from-cyan-500 to-teal-500 hover:from-cyan-600 hover:to-teal-600 text-white"
+              disabled={selectedPatient === patientData.name}
             >
               <User className="w-4 h-4 mr-2" />
-              Seleziona Paziente
+              {selectedPatient === patientData.name ? 'Paziente Selezionato' : 'Seleziona Paziente'}
             </Button>
           </div>
         </CardContent>

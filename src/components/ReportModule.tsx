@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { FileText, Save, Send, Download, CheckCircle, Bot, Eye } from 'lucide-react';
+import { FileText, Save, Send, Download, CheckCircle, Bot, Eye, Share2 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -9,16 +9,23 @@ import { Separator } from '@/components/ui/separator';
 
 interface ReportModuleProps {
   onReportCompleted?: () => void;
+  onReportShared?: () => void;
 }
 
-const ReportModule = ({ onReportCompleted }: ReportModuleProps) => {
+const ReportModule = ({ onReportCompleted, onReportShared }: ReportModuleProps) => {
   const [reportText, setReportText] = useState('');
   const [aiSuggestions, setAiSuggestions] = useState(true);
   const [reportCompleted, setReportCompleted] = useState(false);
+  const [reportShared, setReportShared] = useState(false);
 
   const handleCompleteReport = () => {
     setReportCompleted(true);
     onReportCompleted?.();
+  };
+
+  const handleShareReport = () => {
+    setReportShared(true);
+    onReportShared?.();
   };
 
   const aiSuggestedContent = `REFERTO ECOGRAFICO
@@ -61,6 +68,12 @@ Controllo ecografico tra 3 mesi per valutazione evolutiva.`;
               </div>
             </div>
             <div className="flex items-center space-x-2">
+              {reportShared && (
+                <Badge className="bg-blue-50 text-blue-700 border-blue-200">
+                  <Share2 className="w-3 h-3 mr-1" />
+                  Condiviso
+                </Badge>
+              )}
               <Badge variant="outline" className={`${
                 reportCompleted ? 'bg-green-50 text-green-700 border-green-200' : 'bg-orange-50 text-orange-700 border-orange-200'
               }`}>
@@ -145,6 +158,17 @@ Controllo ecografico tra 3 mesi per valutazione evolutiva.`;
                 <CheckCircle className="w-4 h-4 mr-2" />
                 {reportCompleted ? 'Referto Completato' : 'Completa Referto'}
               </Button>
+              
+              {reportCompleted && (
+                <Button 
+                  onClick={handleShareReport}
+                  className="w-full bg-gradient-to-r from-blue-500 to-cyan-500 hover:from-blue-600 hover:to-cyan-600 text-white"
+                  disabled={reportShared}
+                >
+                  <Share2 className="w-4 h-4 mr-2" />
+                  {reportShared ? 'Referto Condiviso' : 'Condividi con Pet Owner'}
+                </Button>
+              )}
               
               <Button variant="outline" className="w-full">
                 <Download className="w-4 h-4 mr-2" />

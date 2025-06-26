@@ -1,10 +1,12 @@
 
 import React, { useState } from 'react';
-import { Camera, FileText, Clock, Menu, Lock, Check } from 'lucide-react';
+import { Camera, FileText, Clock, Menu, Lock, Check, X, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Badge } from '@/components/ui/badge';
 import Dashboard from '@/components/Dashboard';
 import UltrasoundExam from '@/components/UltrasoundExam';
 import ReportModule from '@/components/ReportModule';
@@ -20,6 +22,7 @@ const Index = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarSection, setSidebarSection] = useState('');
+  const [showTerminateDialog, setShowTerminateDialog] = useState(false);
   
   // Step progression state
   const [stepProgression, setStepProgression] = useState({
@@ -29,6 +32,11 @@ const Index = () => {
     reports: { completed: false, unlocked: false },
     petowner: { completed: false, unlocked: false }
   });
+
+  // Visit state
+  const [visitInProgress, setVisitInProgress] = useState(false);
+  const [reportShared, setReportShared] = useState(false);
+  const [currentPatient, setCurrentPatient] = useState<string | null>(null);
 
   const steps = [
     {
@@ -91,12 +99,43 @@ const Index = () => {
     });
   };
 
+  const resetVisit = () => {
+    setStepProgression({
+      dashboard: { completed: false, unlocked: true },
+      digitaltwin: { completed: false, unlocked: false },
+      exam: { completed: false, unlocked: false },
+      reports: { completed: false, unlocked: false },
+      petowner: { completed: false, unlocked: false }
+    });
+    setActiveTab('dashboard');
+    setVisitInProgress(false);
+    setReportShared(false);
+    setCurrentPatient(null);
+  };
+
+  const handleTerminateVisit = () => {
+    if (visitInProgress && !reportShared && (stepProgression.reports.completed || stepProgression.reports.unlocked)) {
+      setShowTerminateDialog(true);
+    } else {
+      resetVisit();
+    }
+  };
+
+  const handleConfirmTerminate = () => {
+    resetVisit();
+    setShowTerminateDialog(false);
+  };
+
   const handleStartNewVisit = () => {
     completeStep('dashboard');
     setActiveTab('digitaltwin');
+    setVisitInProgress(true);
   };
 
-  const handlePatientSelected = () => {
+  const handlePatientSelected = (patientName?: string) => {
+    if (patientName) {
+      setCurrentPatient(patientName);
+    }
     completeStep('digitaltwin');
     setActiveTab('exam');
   };
@@ -109,6 +148,10 @@ const Index = () => {
   const handleReportCompleted = () => {
     completeStep('reports');
     setActiveTab('petowner');
+  };
+
+  const handleReportShared = () => {
+    setReportShared(true);
   };
 
   const renderSidebarContent = () => {
@@ -124,6 +167,13 @@ const Index = () => {
       default:
         return <Dashboard onStartNewVisit={handleStartNewVisit} />;
     }
+  };
+
+  const getStepStatus = (stepId: string) => {
+    const step = stepProgression[stepId];
+    if (step.completed) return 'completed';
+    if (step.unlocked) return 'active';
+    return 'locked';
   };
 
   return (
@@ -158,6 +208,22 @@ const Index = () => {
               </div>
             </div>
             <div className="flex items-center space-x-4">
+              {visitInProgress && (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleTerminateVisit}
+                  className="text-red-600 border-red-200 hover:bg-red-50"
+                >
+                  <X className="w-4 h-4 mr-1" />
+                  Termina Visita
+                </Button>
+              )}
+              {currentPatient && (
+                <Badge variant="outline" className="bg-blue-50 text-blue-700 border-blue-200">
+                  Paziente: {currentPatient}
+                </Badge>
+              )}
               <ThemeToggle />
               <div className="text-right">
                 <p className="text-sm font-medium text-slate-700 dark:text-slate-200">Dr. Mario Rossi</p>
@@ -177,9 +243,9 @@ const Index = () => {
           <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
             <TabsList className="grid w-full grid-cols-5 bg-slate-50 dark:bg-slate-700 p-1 h-16">
               {steps.map((step, index) => {
-                const stepState = stepProgression[step.id];
-                const isLocked = !stepState.unlocked;
-                const isCompleted = stepState.completed;
+                const stepStatus = getStepStatus(step.id);
+                const isLocked = stepStatus === 'locked';
+                const isCompleted = stepStatus === 'completed';
                 const isActive = activeTab === step.id;
 
                 return (
@@ -195,6 +261,7 @@ const Index = () => {
                             : 'data-[state=active]:bg-white data-[state=active]:text-blue-600 data-[state=active]:shadow-sm'
                           }
                           ${isCompleted ? 'bg-green-50 text-green-700' : ''}
+                          ${isActive && !isCompleted ? 'bg-blue-50 text-blue-700' : ''}
                         `}
                       >
                         <div className={`flex items-center justify-center relative ${
@@ -219,7 +286,7 @@ const Index = () => {
                         {/* Progress indicator */}
                         {index < steps.length - 1 && (
                           <div className={`absolute right-0 top-1/2 w-8 h-0.5 transform translate-x-full -translate-y-1/2 ${
-                            stepProgression[steps[index + 1].id].unlocked ? 'bg-green-400' : 'bg-slate-300'
+                            getStepStatus(steps[index + 1].id) !== 'locked' ? 'bg-green-400' : 'bg-slate-300'
                           }`} />
                         )}
                       </TabsTrigger>
@@ -231,6 +298,11 @@ const Index = () => {
                         {isLocked && (
                           <p className="text-xs text-orange-600 mt-1">
                             Completa lo step precedente per sbloccare
+                          </p>
+                        )}
+                        {isCompleted && (
+                          <p className="text-xs text-green-600 mt-1">
+                            ✓ Step completato
                           </p>
                         )}
                       </div>
@@ -250,7 +322,7 @@ const Index = () => {
               <UltrasoundExam onExamCompleted={handleExamCompleted} />
             </TabsContent>
             <TabsContent value="reports" className="mt-0">
-              <ReportModule onReportCompleted={handleReportCompleted} />
+              <ReportModule onReportCompleted={handleReportCompleted} onReportShared={handleReportShared} />
             </TabsContent>
             <TabsContent value="petowner" className="mt-0">
               <PetOwnerPreview />
@@ -261,6 +333,36 @@ const Index = () => {
           </Tabs>
         </div>
       </div>
+
+      {/* Terminate Visit Confirmation Dialog */}
+      <Dialog open={showTerminateDialog} onOpenChange={setShowTerminateDialog}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center space-x-2">
+              <AlertTriangle className="w-5 h-5 text-orange-500" />
+              <span>Terminare la Visita?</span>
+            </DialogTitle>
+            <DialogDescription>
+              Il referto non è stato condiviso con il proprietario del paziente. 
+              Terminando ora, il referto verrà salvato come bozza.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="flex-col-reverse sm:flex-row sm:justify-end sm:space-x-2">
+            <Button
+              variant="outline"
+              onClick={() => setShowTerminateDialog(false)}
+            >
+              Annulla
+            </Button>
+            <Button
+              variant="destructive"
+              onClick={handleConfirmTerminate}
+            >
+              Termina Comunque
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 };
