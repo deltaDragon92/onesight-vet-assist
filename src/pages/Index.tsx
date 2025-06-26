@@ -1,8 +1,7 @@
 
 import React, { useState } from 'react';
-import { Camera, FileText, BookOpen, Clock, Play, Square, Save, MapPin } from 'lucide-react';
+import { Camera, FileText, Clock, Menu } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import Dashboard from '@/components/Dashboard';
@@ -11,17 +10,59 @@ import ReportModule from '@/components/ReportModule';
 import TrainingModule from '@/components/TrainingModule';
 import PetOwnerPreview from '@/components/PetOwnerPreview';
 import DigitalTwin from '@/components/DigitalTwin';
+import AppSidebar from '@/components/AppSidebar';
+import Marketplace from '@/components/Marketplace';
+import Settings from '@/components/Settings';
+import Support from '@/components/Support';
 
 const Index = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [sidebarSection, setSidebarSection] = useState('');
+
+  const handleSidebarNavigate = (section: string) => {
+    setSidebarSection(section);
+    setActiveTab('sidebar');
+  };
+
+  const renderSidebarContent = () => {
+    switch (sidebarSection) {
+      case 'marketplace':
+        return <Marketplace />;
+      case 'training':
+        return <TrainingModule />;
+      case 'settings':
+        return <Settings />;
+      case 'support':
+        return <Support />;
+      default:
+        return <Dashboard />;
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 dark:from-slate-900 dark:to-slate-800">
+      {/* Sidebar */}
+      <AppSidebar 
+        isOpen={sidebarOpen}
+        onClose={() => setSidebarOpen(false)}
+        onNavigate={handleSidebarNavigate}
+        currentSection={sidebarSection}
+      />
+      
       {/* Header */}
       <header className="bg-white dark:bg-slate-800 shadow-sm border-b border-blue-100 dark:border-slate-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex justify-between items-center h-16">
             <div className="flex items-center space-x-3">
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={() => setSidebarOpen(true)}
+                className="h-8 w-8"
+              >
+                <Menu className="w-5 h-5" />
+              </Button>
               <div className="w-10 h-10 bg-gradient-to-r from-blue-600 to-teal-500 rounded-lg flex items-center justify-center">
                 <Camera className="w-6 h-6 text-white" />
               </div>
@@ -48,7 +89,7 @@ const Index = () => {
       <div className="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-6 bg-slate-50 p-1 h-14">
+            <TabsList className="grid w-full grid-cols-5 bg-slate-50 p-1 h-14">
               <TabsTrigger 
                 value="dashboard" 
                 className="flex items-center space-x-2 text-sm font-medium data-[state=active]:bg-white data-[state=active]:text-blue-600 data-[state=active]:shadow-sm"
@@ -80,13 +121,6 @@ const Index = () => {
                 <span className="hidden sm:inline">Referti</span>
               </TabsTrigger>
               <TabsTrigger 
-                value="training" 
-                className="flex items-center space-x-2 text-sm font-medium data-[state=active]:bg-white data-[state=active]:text-blue-600 data-[state=active]:shadow-sm"
-              >
-                <BookOpen className="w-5 h-5" />
-                <span className="hidden sm:inline">Formazione</span>
-              </TabsTrigger>
-              <TabsTrigger 
                 value="petowner" 
                 className="flex items-center space-x-2 text-sm font-medium data-[state=active]:bg-white data-[state=active]:text-blue-600 data-[state=active]:shadow-sm"
               >
@@ -107,11 +141,11 @@ const Index = () => {
             <TabsContent value="reports" className="mt-0">
               <ReportModule />
             </TabsContent>
-            <TabsContent value="training" className="mt-0">
-              <TrainingModule />
-            </TabsContent>
             <TabsContent value="petowner" className="mt-0">
               <PetOwnerPreview />
+            </TabsContent>
+            <TabsContent value="sidebar" className="mt-0">
+              {renderSidebarContent()}
             </TabsContent>
           </Tabs>
         </div>
