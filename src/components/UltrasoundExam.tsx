@@ -1,14 +1,19 @@
 
 import React, { useState, useEffect } from 'react';
-import { Play, Square, Save, Camera, MapPin, Volume2, Settings, Maximize } from 'lucide-react';
+import { Play, Square, Save, Camera, MapPin, Volume2, Settings, Maximize, CheckCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 
-const UltrasoundExam = () => {
+interface UltrasoundExamProps {
+  onExamCompleted?: () => void;
+}
+
+const UltrasoundExam = ({ onExamCompleted }: UltrasoundExamProps) => {
   const [isRecording, setIsRecording] = useState(false);
   const [aiGuidanceActive, setAiGuidanceActive] = useState(false);
   const [detectedStructures, setDetectedStructures] = useState([]);
+  const [examCompleted, setExamCompleted] = useState(false);
   
   // Simulate AI detection
   useEffect(() => {
@@ -36,6 +41,11 @@ const UltrasoundExam = () => {
     setIsRecording(!isRecording);
   };
 
+  const handleCompleteExam = () => {
+    setExamCompleted(true);
+    onExamCompleted?.();
+  };
+
   return (
     <div className="p-6 space-y-6">
       {/* Patient Info Bar */}
@@ -52,8 +62,10 @@ const UltrasoundExam = () => {
               </div>
             </div>
             <div className="flex items-center space-x-2">
-              <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
-                Esame in corso
+              <Badge variant="outline" className={`${
+                examCompleted ? 'bg-green-50 text-green-700 border-green-200' : 'bg-blue-50 text-blue-700 border-blue-200'
+              }`}>
+                {examCompleted ? 'Esame completato' : 'Esame in corso'}
               </Badge>
               <span className="text-sm text-slate-500">12:34</span>
             </div>
@@ -189,6 +201,18 @@ const UltrasoundExam = () => {
               <Button variant="outline" className="w-full h-10 text-sm">
                 <MapPin className="w-4 h-4 mr-2" />
                 Marca Struttura
+              </Button>
+            </div>
+
+            {/* Complete Exam Button */}
+            <div className="border-t pt-4">
+              <Button 
+                onClick={handleCompleteExam}
+                className="w-full h-12 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-medium"
+                disabled={examCompleted}
+              >
+                <CheckCircle className="w-4 h-4 mr-2" />
+                {examCompleted ? 'Esame Completato' : 'Completa Esame'}
               </Button>
             </div>
 

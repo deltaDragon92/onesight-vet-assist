@@ -1,9 +1,10 @@
 
 import React, { useState } from 'react';
-import { Camera, FileText, Clock, Menu } from 'lucide-react';
+import { Camera, FileText, Clock, Menu, Lock, Check } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ThemeToggle } from '@/components/ThemeToggle';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import Dashboard from '@/components/Dashboard';
 import UltrasoundExam from '@/components/UltrasoundExam';
 import ReportModule from '@/components/ReportModule';
@@ -19,10 +20,95 @@ const Index = () => {
   const [activeTab, setActiveTab] = useState('dashboard');
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarSection, setSidebarSection] = useState('');
+  
+  // Step progression state
+  const [stepProgression, setStepProgression] = useState({
+    dashboard: { completed: false, unlocked: true },
+    digitaltwin: { completed: false, unlocked: false },
+    exam: { completed: false, unlocked: false },
+    reports: { completed: false, unlocked: false },
+    petowner: { completed: false, unlocked: false }
+  });
+
+  const steps = [
+    {
+      id: 'dashboard',
+      label: 'Dashboard',
+      icon: <div className="w-5 h-5 bg-blue-500 rounded"></div>,
+      description: 'Riepilogo e avvio visita'
+    },
+    {
+      id: 'digitaltwin',
+      label: 'Gemello Digitale',
+      icon: <div className="w-5 h-5 bg-gradient-to-r from-cyan-500 to-teal-500 rounded-full"></div>,
+      description: 'Scheda paziente e storico'
+    },
+    {
+      id: 'exam',
+      label: 'Esame Live',
+      icon: <Camera className="w-5 h-5" />,
+      description: 'Ecografia in tempo reale'
+    },
+    {
+      id: 'reports',
+      label: 'Referti',
+      icon: <FileText className="w-5 h-5" />,
+      description: 'Refertazione assistita'
+    },
+    {
+      id: 'petowner',
+      label: 'Pet Owner',
+      icon: <Clock className="w-5 h-5" />,
+      description: 'Vista per proprietari'
+    }
+  ];
 
   const handleSidebarNavigate = (section: string) => {
     setSidebarSection(section);
     setActiveTab('sidebar');
+  };
+
+  const handleTabChange = (tabValue: string) => {
+    if (stepProgression[tabValue]?.unlocked) {
+      setActiveTab(tabValue);
+    }
+  };
+
+  const completeStep = (stepId: string) => {
+    setStepProgression(prev => {
+      const newProgression = { ...prev };
+      newProgression[stepId].completed = true;
+
+      // Unlock next step
+      const stepOrder = ['dashboard', 'digitaltwin', 'exam', 'reports', 'petowner'];
+      const currentIndex = stepOrder.indexOf(stepId);
+      if (currentIndex < stepOrder.length - 1) {
+        const nextStep = stepOrder[currentIndex + 1];
+        newProgression[nextStep].unlocked = true;
+      }
+
+      return newProgression;
+    });
+  };
+
+  const handleStartNewVisit = () => {
+    completeStep('dashboard');
+    setActiveTab('digitaltwin');
+  };
+
+  const handlePatientSelected = () => {
+    completeStep('digitaltwin');
+    setActiveTab('exam');
+  };
+
+  const handleExamCompleted = () => {
+    completeStep('exam');
+    setActiveTab('reports');
+  };
+
+  const handleReportCompleted = () => {
+    completeStep('reports');
+    setActiveTab('petowner');
   };
 
   const renderSidebarContent = () => {
@@ -36,7 +122,7 @@ const Index = () => {
       case 'support':
         return <Support />;
       default:
-        return <Dashboard />;
+        return <Dashboard onStartNewVisit={handleStartNewVisit} />;
     }
   };
 
@@ -85,61 +171,86 @@ const Index = () => {
         </div>
       </header>
 
-      {/* Navigation Tabs */}
+      {/* Step Navigation */}
       <div className="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-            <TabsList className="grid w-full grid-cols-5 bg-slate-50 p-1 h-14">
-              <TabsTrigger 
-                value="dashboard" 
-                className="flex items-center space-x-2 text-sm font-medium data-[state=active]:bg-white data-[state=active]:text-blue-600 data-[state=active]:shadow-sm"
-              >
-                <div className="w-8 h-8 rounded-lg bg-blue-100 flex items-center justify-center">
-                  <div className="w-3 h-3 bg-blue-500 rounded"></div>
-                </div>
-                <span className="hidden sm:inline">Dashboard</span>
-              </TabsTrigger>
-              <TabsTrigger 
-                value="exam" 
-                className="flex items-center space-x-2 text-sm font-medium data-[state=active]:bg-white data-[state=active]:text-blue-600 data-[state=active]:shadow-sm"
-              >
-                <Camera className="w-5 h-5" />
-                <span className="hidden sm:inline">Esame Live</span>
-              </TabsTrigger>
-              <TabsTrigger 
-                value="digitaltwin" 
-                className="flex items-center space-x-2 text-sm font-medium data-[state=active]:bg-white data-[state=active]:text-blue-600 data-[state=active]:shadow-sm"
-              >
-                <div className="w-5 h-5 bg-gradient-to-r from-cyan-500 to-teal-500 rounded-full"></div>
-                <span className="hidden sm:inline">Gemello Digitale</span>
-              </TabsTrigger>
-              <TabsTrigger 
-                value="reports" 
-                className="flex items-center space-x-2 text-sm font-medium data-[state=active]:bg-white data-[state=active]:text-blue-600 data-[state=active]:shadow-sm"
-              >
-                <FileText className="w-5 h-5" />
-                <span className="hidden sm:inline">Referti</span>
-              </TabsTrigger>
-              <TabsTrigger 
-                value="petowner" 
-                className="flex items-center space-x-2 text-sm font-medium data-[state=active]:bg-white data-[state=active]:text-blue-600 data-[state=active]:shadow-sm"
-              >
-                <Clock className="w-5 h-5" />
-                <span className="hidden sm:inline">Pet Owner</span>
-              </TabsTrigger>
+          <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
+            <TabsList className="grid w-full grid-cols-5 bg-slate-50 dark:bg-slate-700 p-1 h-16">
+              {steps.map((step, index) => {
+                const stepState = stepProgression[step.id];
+                const isLocked = !stepState.unlocked;
+                const isCompleted = stepState.completed;
+                const isActive = activeTab === step.id;
+
+                return (
+                  <Tooltip key={step.id}>
+                    <TooltipTrigger asChild>
+                      <TabsTrigger 
+                        value={step.id}
+                        disabled={isLocked}
+                        className={`
+                          flex flex-col items-center justify-center space-y-1 text-xs font-medium h-14 relative
+                          ${isLocked 
+                            ? 'opacity-50 cursor-not-allowed' 
+                            : 'data-[state=active]:bg-white data-[state=active]:text-blue-600 data-[state=active]:shadow-sm'
+                          }
+                          ${isCompleted ? 'bg-green-50 text-green-700' : ''}
+                        `}
+                      >
+                        <div className={`flex items-center justify-center relative ${
+                          isCompleted ? 'text-green-600' : 
+                          isActive ? 'text-blue-600' : 
+                          isLocked ? 'text-slate-400' : 'text-slate-600'
+                        }`}>
+                          {isLocked ? (
+                            <Lock className="w-4 h-4" />
+                          ) : isCompleted ? (
+                            <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
+                              <Check className="w-3 h-3 text-white" />
+                            </div>
+                          ) : (
+                            step.icon
+                          )}
+                        </div>
+                        <span className="hidden sm:inline text-center leading-tight">
+                          {step.label}
+                        </span>
+                        
+                        {/* Progress indicator */}
+                        {index < steps.length - 1 && (
+                          <div className={`absolute right-0 top-1/2 w-8 h-0.5 transform translate-x-full -translate-y-1/2 ${
+                            stepProgression[steps[index + 1].id].unlocked ? 'bg-green-400' : 'bg-slate-300'
+                          }`} />
+                        )}
+                      </TabsTrigger>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <div className="text-center">
+                        <p className="font-medium">{step.label}</p>
+                        <p className="text-xs text-slate-500">{step.description}</p>
+                        {isLocked && (
+                          <p className="text-xs text-orange-600 mt-1">
+                            Completa lo step precedente per sbloccare
+                          </p>
+                        )}
+                      </div>
+                    </TooltipContent>
+                  </Tooltip>
+                );
+              })}
             </TabsList>
 
             <TabsContent value="dashboard" className="mt-0">
-              <Dashboard />
-            </TabsContent>
-            <TabsContent value="exam" className="mt-0">
-              <UltrasoundExam />
+              <Dashboard onStartNewVisit={handleStartNewVisit} />
             </TabsContent>
             <TabsContent value="digitaltwin" className="mt-0">
-              <DigitalTwin />
+              <DigitalTwin onPatientSelected={handlePatientSelected} />
+            </TabsContent>
+            <TabsContent value="exam" className="mt-0">
+              <UltrasoundExam onExamCompleted={handleExamCompleted} />
             </TabsContent>
             <TabsContent value="reports" className="mt-0">
-              <ReportModule />
+              <ReportModule onReportCompleted={handleReportCompleted} />
             </TabsContent>
             <TabsContent value="petowner" className="mt-0">
               <PetOwnerPreview />

@@ -1,10 +1,13 @@
-
 import React from 'react';
-import { Camera, FileText, BookOpen, Clock, Activity, Users, TrendingUp, AlertCircle } from 'lucide-react';
+import { Camera, FileText, BookOpen, Clock, Activity, Users, TrendingUp, AlertCircle, Play } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 
-const Dashboard = () => {
+interface DashboardProps {
+  onStartNewVisit?: () => void;
+}
+
+const Dashboard = ({ onStartNewVisit }: DashboardProps) => {
   const quickStats = [
     { title: 'Esami Oggi', value: '12', icon: Camera, color: 'bg-blue-500' },
     { title: 'Referti Completati', value: '8', icon: FileText, color: 'bg-green-500' },
@@ -51,6 +54,17 @@ const Dashboard = () => {
 
   return (
     <div className="p-6 space-y-6">
+      {/* Start New Visit Button */}
+      <div className="flex justify-center">
+        <Button 
+          onClick={onStartNewVisit}
+          className="h-16 px-8 text-lg font-semibold bg-gradient-to-r from-blue-600 to-teal-600 hover:from-blue-700 hover:to-teal-700 text-white shadow-lg"
+        >
+          <Play className="w-6 h-6 mr-3" />
+          Avvia Nuova Visita
+        </Button>
+      </div>
+
       {/* Quick Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         {quickStats.map((stat, index) => (
