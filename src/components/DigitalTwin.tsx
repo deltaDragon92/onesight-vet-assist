@@ -1,6 +1,5 @@
-
 import React, { useState } from 'react';
-import { Heart, Activity, Thermometer, Scale, Eye, Stethoscope, Calendar, FileText, Download, Plus, RefreshCw, User } from 'lucide-react';
+import { Heart, Activity, Thermometer, Scale, Eye, Stethoscope, Calendar, FileText, Download, Plus, RefreshCw, User, Wifi, WifiOff, AlertTriangle, TrendingUp, Settings, Zap } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -45,36 +44,151 @@ const DigitalTwin = ({ onPatientSelected }: DigitalTwinProps) => {
     { id: 5, x: 50, y: 75, organ: "Vescica", status: "normal" }
   ];
 
-  const recentReports = [
+  const wearableDevices = [
     {
       id: 1,
-      date: "15 Nov 2024",
-      title: "Ecocardiografia di Controllo",
-      description: "Valutazione funzione cardiaca post-terapia",
-      status: "completed",
+      name: "ECG FAST-Band",
+      type: "ECG Monitor",
+      status: "connected", // connected, warning, disconnected
+      currentReading: "HR: 92 bpm",
+      lastUpdate: "2 min fa",
+      batteryLevel: 85,
+      icon: Heart
+    },
+    {
+      id: 2,
+      name: "Patch Temp Pro",
+      type: "Temperature Sensor",
+      status: "connected",
+      currentReading: "38.2°C",
+      lastUpdate: "1 min fa",
+      batteryLevel: 67,
+      icon: Thermometer
+    },
+    {
+      id: 3,
+      name: "Activity Tracker",
+      type: "Movement Monitor",
+      status: "warning",
+      currentReading: "Bassa attività",
+      lastUpdate: "15 min fa",
+      batteryLevel: 23,
+      icon: Activity
+    }
+  ];
+
+  const aiInsights = [
+    {
+      id: 1,
+      title: "Possibile ipertrofia atriale sinistra",
+      description: "Rilevata in 2 esami su 3 negli ultimi 2 mesi",
+      severity: "warning", // normal, warning, critical
+      confidence: 78,
       type: "Cardiologia"
     },
     {
       id: 2,
-      date: "02 Nov 2024",
-      title: "Ecografia Addominale",
-      description: "Controllo epatico - lieve epatomegalia",
-      status: "completed",
+      title: "Tendenza al calo della frazione di eiezione",
+      description: "Riduzione del 12% rispetto ai valori baseline",
+      severity: "critical",
+      confidence: 85,
+      type: "Cardiologia"
+    },
+    {
+      id: 3,
+      title: "Parametri epatici stabili",
+      description: "Nessun pattern critico rilevato negli ultimi 2 mesi",
+      severity: "normal",
+      confidence: 92,
       type: "Addome"
+    }
+  ];
+
+  const visitHistory = [
+    {
+      id: 1,
+      date: "15 Nov 2024",
+      time: "14:30",
+      district: "Torace",
+      veterinarian: "Dr. Mario Rossi",
+      status: "completed", // draft, completed, shared
+      reportShared: true,
+      moduleUsed: "Cuore Pro",
+      type: "Ecocardiografia"
+    },
+    {
+      id: 2,
+      date: "02 Nov 2024",
+      time: "10:15",
+      district: "Addome",
+      veterinarian: "Dr. Laura Bianchi",
+      status: "shared",
+      reportShared: true,
+      moduleUsed: "Standard",
+      type: "Ecografia Addominale"
     },
     {
       id: 3,
       date: "18 Ott 2024",
-      title: "Screening Completo",
-      description: "Check-up annuale - parametri nella norma",
-      status: "completed",
-      type: "Generale"
+      time: "16:45",
+      district: "Torace",
+      veterinarian: "Dr. Mario Rossi",
+      status: "draft",
+      reportShared: false,
+      moduleUsed: "Standard",
+      type: "Screening Completo"
     }
   ];
 
   const handleSelectPatient = () => {
     setSelectedPatient(patientData.name);
     onPatientSelected?.(patientData.name);
+  };
+
+  const getStatusIcon = (status: string) => {
+    switch (status) {
+      case 'connected':
+        return <Wifi className="w-4 h-4 text-green-500" />;
+      case 'warning':
+        return <AlertTriangle className="w-4 h-4 text-orange-500" />;
+      case 'disconnected':
+        return <WifiOff className="w-4 h-4 text-red-500" />;
+      default:
+        return <WifiOff className="w-4 h-4 text-gray-400" />;
+    }
+  };
+
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case 'connected':
+        return 'Connesso';
+      case 'warning':
+        return 'Non rilevato';
+      case 'disconnected':
+        return 'Disconnesso';
+      default:
+        return 'Sconosciuto';
+    }
+  };
+
+  const getInsightBadgeColor = (severity: string) => {
+    switch (severity) {
+      case 'normal':
+        return 'bg-green-100 text-green-800 border-green-200';
+      case 'warning':
+        return 'bg-orange-100 text-orange-800 border-orange-200';
+      case 'critical':
+        return 'bg-red-100 text-red-800 border-red-200';
+      default:
+        return 'bg-gray-100 text-gray-800 border-gray-200';
+    }
+  };
+
+  const getVisitStatusIcon = (status: string, shared: boolean) => {
+    if (status === 'draft') return '📝';
+    if (status === 'completed' && !shared) return '✅';
+    if (shared) return '📤';
+    return '📋';
   };
 
   return (
@@ -105,9 +219,9 @@ const DigitalTwin = ({ onPatientSelected }: DigitalTwinProps) => {
         </CardContent>
       </Card>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
         {/* Digital Twin Visualization */}
-        <Card className="lg:col-span-2 bg-gradient-to-br from-cyan-50 to-teal-50 border-cyan-200">
+        <Card className="xl:col-span-2 bg-gradient-to-br from-cyan-50 to-teal-50 border-cyan-200">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2 text-cyan-800">
               <div className="w-3 h-3 bg-cyan-500 rounded-full animate-pulse"></div>
@@ -197,8 +311,40 @@ const DigitalTwin = ({ onPatientSelected }: DigitalTwinProps) => {
           </CardContent>
         </Card>
 
-        {/* Reports & Actions */}
-        <div className="space-y-6">
+        {/* Right Column - AI Insights and Actions */}
+        <div className="xl:col-span-2 space-y-6">
+          {/* AI Insights */}
+          <Card className="bg-gradient-to-r from-purple-50 to-blue-50 border-purple-200">
+            <CardHeader>
+              <CardTitle className="flex items-center space-x-2 text-purple-800">
+                <TrendingUp className="w-5 h-5" />
+                <span>Insight Intelligente</span>
+              </CardTitle>
+              <p className="text-sm text-purple-600">Suggerimenti generati dall'analisi AI dei dati clinici e storici</p>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {aiInsights.map((insight) => (
+                <div key={insight.id} className="bg-white rounded-lg p-4 border border-purple-100">
+                  <div className="flex items-start justify-between mb-2">
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-2 mb-1">
+                        <Badge className={getInsightBadgeColor(insight.severity)}>
+                          {insight.type}
+                        </Badge>
+                        <span className="text-xs text-slate-500">{insight.confidence}% confidenza</span>
+                      </div>
+                      <h4 className="font-medium text-slate-800 text-sm">{insight.title}</h4>
+                      <p className="text-xs text-slate-600 mt-1">{insight.description}</p>
+                    </div>
+                    <Button size="sm" variant="ghost" className="text-xs">
+                      Approfondisci
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </CardContent>
+          </Card>
+
           {/* Action Buttons */}
           <Card className="bg-white shadow-sm">
             <CardHeader>
@@ -219,41 +365,114 @@ const DigitalTwin = ({ onPatientSelected }: DigitalTwinProps) => {
               </Button>
             </CardContent>
           </Card>
+        </div>
+      </div>
 
-          {/* Recent Reports */}
-          <Card className="bg-white shadow-sm">
-            <CardHeader>
-              <CardTitle className="flex items-center space-x-2">
-                <FileText className="w-5 h-5 text-blue-600" />
-                <span>Referti Recenti</span>
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {recentReports.map((report) => (
-                  <div key={report.id} className="border-l-4 border-blue-200 pl-4 py-2">
-                    <div className="flex items-start justify-between">
-                      <div className="flex-1">
-                        <div className="flex items-center space-x-2 mb-1">
-                          <Badge variant="outline" className="text-xs">
-                            {report.type}
-                          </Badge>
-                          <span className="text-xs text-slate-500">{report.date}</span>
-                        </div>
-                        <h4 className="font-medium text-slate-800 text-sm">{report.title}</h4>
-                        <p className="text-xs text-slate-600 mt-1">{report.description}</p>
-                      </div>
-                      <Button size="sm" variant="ghost" className="text-xs">
-                        <Eye className="w-3 h-3 mr-1" />
-                        Visualizza
-                      </Button>
+      {/* Bottom Section - Wearables and Visit History */}
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        {/* Wearables */}
+        <Card className="bg-white shadow-sm">
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              <Zap className="w-5 h-5 text-blue-600" />
+              <span>Dispositivi Wearable</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {wearableDevices.map((device) => (
+              <div key={device.id} className="flex items-center justify-between p-4 bg-slate-50 rounded-lg border">
+                <div className="flex items-center space-x-3">
+                  <div className={`w-10 h-10 rounded-lg flex items-center justify-center ${
+                    device.status === 'connected' ? 'bg-green-100 text-green-600' :
+                    device.status === 'warning' ? 'bg-orange-100 text-orange-600' :
+                    'bg-red-100 text-red-600'
+                  }`}>
+                    <device.icon className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <div className="flex items-center space-x-2">
+                      <p className="font-medium text-slate-800 text-sm">{device.name}</p>
+                      {getStatusIcon(device.status)}
+                    </div>
+                    <p className="text-xs text-slate-600">{device.type}</p>
+                    <div className="flex items-center space-x-2 mt-1">
+                      <p className="text-xs font-medium text-slate-700">{device.currentReading}</p>
+                      <span className="text-xs text-slate-500">• {device.lastUpdate}</span>
                     </div>
                   </div>
-                ))}
+                </div>
+                <div className="flex items-center space-x-2">
+                  <div className="text-right">
+                    <p className="text-xs text-slate-500">{getStatusText(device.status)}</p>
+                    <p className="text-xs text-slate-400">Batteria: {device.batteryLevel}%</p>
+                  </div>
+                  <Button size="sm" variant="outline">
+                    <Settings className="w-3 h-3 mr-1" />
+                    Configura
+                  </Button>
+                </div>
               </div>
-            </CardContent>
-          </Card>
-        </div>
+            ))}
+          </CardContent>
+        </Card>
+
+        {/* Visit History */}
+        <Card className="bg-white shadow-sm">
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              <Calendar className="w-5 h-5 text-green-600" />
+              <span>Cronologia Visite</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-4 max-h-80 overflow-y-auto">
+              {visitHistory.map((visit) => (
+                <div key={visit.id} className="border-l-4 border-blue-200 pl-4 py-3">
+                  <div className="flex items-start justify-between">
+                    <div className="flex-1">
+                      <div className="flex items-center space-x-2 mb-1">
+                        <span className="text-lg">{getVisitStatusIcon(visit.status, visit.reportShared)}</span>
+                        <Badge variant="outline" className="text-xs">
+                          {visit.district}
+                        </Badge>
+                        <span className="text-xs text-slate-500">{visit.date} • {visit.time}</span>
+                        {visit.moduleUsed !== 'Standard' && (
+                          <Badge className="bg-purple-100 text-purple-700 text-xs">
+                            {visit.moduleUsed}
+                          </Badge>
+                        )}
+                      </div>
+                      <h4 className="font-medium text-slate-800 text-sm">{visit.type}</h4>
+                      <p className="text-xs text-slate-600 mt-1">Dr. {visit.veterinarian}</p>
+                      <div className="flex items-center space-x-2 mt-2">
+                        <Badge 
+                          variant="outline"
+                          className={`text-xs ${
+                            visit.status === 'completed' || visit.status === 'shared' 
+                              ? 'bg-green-50 text-green-700 border-green-200' 
+                              : 'bg-orange-50 text-orange-700 border-orange-200'
+                          }`}
+                        >
+                          {visit.status === 'draft' ? 'Bozza' : 
+                           visit.status === 'completed' ? 'Completato' : 'Condiviso'}
+                        </Badge>
+                        {visit.reportShared && (
+                          <Badge className="bg-blue-50 text-blue-700 border-blue-200 text-xs">
+                            📤 Condiviso con Pet Owner
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                    <Button size="sm" variant="ghost" className="text-xs">
+                      <Eye className="w-3 h-3 mr-1" />
+                      Apri Referto
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
