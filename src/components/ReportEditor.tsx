@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import { FileText, Plus, Mic, Eye, Share2, CheckCircle, Bot, Search, Clock, AlertCircle } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -80,7 +79,7 @@ const ReportEditor = ({ patientName = "Luna", onReportCompleted, onReportShared 
       const updatedBlocks = blocks.map(block => ({
         ...block,
         content: getAIGeneratedContent(block.type),
-        aiConfidence: Math.random() > 0.3 ? 'high' : 'medium',
+        aiConfidence: (Math.random() > 0.3 ? 'high' : 'medium') as 'high' | 'medium' | 'low',
         isComplete: true
       }));
       setBlocks(updatedBlocks);
