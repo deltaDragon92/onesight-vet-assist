@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Bot, Trash2, GripVertical, AlertCircle, CheckCircle, Sparkles, Palette, ImageIcon, MessageCircle } from 'lucide-react';
+import { Bot, Trash2, GripVertical, AlertCircle, CheckCircle, Sparkles, Palette, ImageIcon, MessageCircle, Edit3, MessageSquare } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -11,23 +11,23 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 interface ReportBlockProps {
   block: {
     id: string;
-    type: 'exam' | 'anatomy' | 'diagnosis' | 'followup' | 'custom';
+    type: 'custom';
     title: string;
     content: string;
     color: string;
     icon: string;
     aiConfidence?: 'low' | 'medium' | 'high';
     isComplete: boolean;
-    isRequired: boolean;
     attachments?: string[];
   };
   onUpdate: (id: string, content: string) => void;
   onCustomize: (id: string, updates: any) => void;
   onDelete: (id: string) => void;
+  onAIChat?: () => void;
   canDelete?: boolean;
 }
 
-const ReportBlock = ({ block, onUpdate, onCustomize, onDelete, canDelete = true }: ReportBlockProps) => {
+const ReportBlock = ({ block, onUpdate, onCustomize, onDelete, onAIChat, canDelete = true }: ReportBlockProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [localTitle, setLocalTitle] = useState(block.title);
   const [isSuggesting, setIsSuggesting] = useState(false);
@@ -45,7 +45,7 @@ const ReportBlock = ({ block, onUpdate, onCustomize, onDelete, canDelete = true 
     { name: 'Grigio', value: 'bg-slate-500', border: 'border-slate-200', bg: 'bg-slate-50' }
   ];
 
-  const icons = ['🔍', '🫀', '🧠', '🦴', '🩺', '📋', '📅', '💊', '🩹', '📝', '⚕️', '🔬'];
+  const icons = ['🔍', '🫀', '🧠', '🦴', '🩺', '📋', '📅', '💊', '🩹', '📝', '⚕️', '🔬', '🏥', '🎯', '📊', '💡'];
 
   const getConfidenceBadge = (confidence?: string) => {
     if (!confidence) return null;
@@ -68,15 +68,16 @@ const ReportBlock = ({ block, onUpdate, onCustomize, onDelete, canDelete = true 
     setIsSuggesting(true);
     
     setTimeout(() => {
-      const suggestions = {
-        exam: "Metodica ecografica standard con sonda lineare e convessa. Paziente posizionato in decubito laterale sinistro per ottimale visualizzazione delle strutture cardiache.",
-        anatomy: "Strutture cardiache: ventricolo sinistro di dimensioni normali (DIVd: 3.2 cm), funzione sistolica conservata (FE: 65%). Atrii di dimensioni regolari. Apparato valvolare mitralico e tricuspidale competenti.",
-        diagnosis: "Quadro ecocardiografico nella norma per età e specie. Non alterazioni strutturali significative. Funzione sistolica e diastolica preservate. Pressioni intracardiache nei limiti.",
-        followup: "Controllo ecocardiografico consigliato tra 6-12 mesi. Mantenere monitoraggio clinico regolare. Rivalutazione immediata in caso di comparsa di sintomi cardiovascolari."
-      };
+      const suggestions = [
+        "Il quadro ecografico presenta caratteristiche morfologiche nella norma per età e specie.",
+        "Le strutture anatomiche esaminate mostrano dimensioni e ecogenicità appropriate.",
+        "Non si evidenziano alterazioni strutturali significative nell'area esaminata.",
+        "La funzionalità degli organi appare preservata e coerente con i parametri fisiologici.",
+        "Si consiglia monitoraggio periodico per controllo evolutivo del quadro clinico."
+      ];
       
-      const newContent = suggestions[block.type] || "Contenuto suggerito dall'AI basato sui dati raccolti durante l'esame";
-      onUpdate(block.id, block.content + (block.content ? '\n\n' : '') + newContent);
+      const randomSuggestion = suggestions[Math.floor(Math.random() * suggestions.length)];
+      onUpdate(block.id, block.content + (block.content ? '\n\n' : '') + randomSuggestion);
       setIsSuggesting(false);
     }, 1500);
   };
@@ -89,87 +90,127 @@ const ReportBlock = ({ block, onUpdate, onCustomize, onDelete, canDelete = true 
   const colorConfig = colors.find(c => c.value === block.color) || colors[0];
 
   return (
-    <Card className={`transition-all duration-300 shadow-lg border-0 ${
-      block.isComplete ? `${colorConfig.border} ${colorConfig.bg}` : 
-      block.isRequired ? 'border-orange-200 bg-orange-50' : 'border-slate-200 bg-white'
+    <Card className={`group transition-all duration-300 shadow-lg border-0 hover:shadow-xl ${
+      block.isComplete ? `${colorConfig.border} ${colorConfig.bg}` : 'border-slate-200 bg-white'
     }`}>
       <CardHeader className="pb-3">
         <div className="flex items-center justify-between">
           <div className="flex items-center space-x-3">
-            <GripVertical className="w-5 h-5 text-slate-400 cursor-move hover:text-slate-600" />
-            <div className={`w-10 h-10 ${block.color} rounded-xl flex items-center justify-center text-white shadow-md`}>
-              <span className="text-lg">{block.icon}</span>
+            <GripVertical className="w-5 h-5 text-slate-400 cursor-move hover:text-slate-600 transition-colors" />
+            <div className={`w-12 h-12 ${block.color} rounded-xl flex items-center justify-center text-white shadow-md transition-transform group-hover:scale-105`}>
+              <span className="text-xl">{block.icon}</span>
             </div>
             {isEditing ? (
               <div className="flex items-center space-x-2">
                 <Input
                   value={localTitle}
                   onChange={(e) => setLocalTitle(e.target.value)}
-                  className="font-semibold text-slate-800 text-lg"
+                  className="font-semibold text-slate-800 text-lg min-w-48"
                   autoFocus
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') handleTitleSave();
+                    if (e.key === 'Escape') setIsEditing(false);
+                  }}
                 />
-                <Button size="sm" onClick={handleTitleSave}>✓</Button>
-                <Button size="sm" variant="ghost" onClick={() => setIsEditing(false)}>✕</Button>
+                <Button size="sm" onClick={handleTitleSave} className="bg-green-500 hover:bg-green-600 text-white">
+                  ✓
+                </Button>
+                <Button size="sm" variant="ghost" onClick={() => setIsEditing(false)}>
+                  ✕
+                </Button>
               </div>
             ) : (
-              <CardTitle 
-                className="text-slate-800 cursor-pointer hover:text-blue-600 transition-colors text-lg"
-                onClick={() => setIsEditing(true)}
-              >
-                {localTitle}
-              </CardTitle>
+              <div className="flex items-center space-x-2">
+                <CardTitle 
+                  className="text-slate-800 cursor-pointer hover:text-blue-600 transition-colors text-lg"
+                  onClick={() => setIsEditing(true)}
+                >
+                  {localTitle}
+                </CardTitle>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setIsEditing(true)}
+                  className="opacity-0 group-hover:opacity-100 transition-opacity text-slate-400 hover:text-slate-600"
+                >
+                  <Edit3 className="w-4 h-4" />
+                </Button>
+              </div>
             )}
           </div>
           
           <div className="flex items-center space-x-2">
-            <Popover open={showCustomization} onOpenChange={setShowCustomization}>
-              <PopoverTrigger asChild>
-                <Button variant="ghost" size="sm" className="text-slate-500 hover:text-slate-700">
-                  <Palette className="w-4 h-4" />
+            {/* Action buttons - visible on hover */}
+            <div className="flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
+              {onAIChat && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={onAIChat}
+                  className="text-purple-600 hover:text-purple-700 hover:bg-purple-50"
+                  title="Chiedi all'AI"
+                >
+                  <MessageSquare className="w-4 h-4" />
                 </Button>
-              </PopoverTrigger>
-              <PopoverContent className="w-80">
-                <div className="space-y-4">
-                  <div>
-                    <label className="text-sm font-medium text-slate-700 mb-2 block">Colore</label>
-                    <div className="grid grid-cols-4 gap-2">
-                      {colors.map((color) => (
-                        <button
-                          key={color.value}
-                          onClick={() => onCustomize(block.id, { color: color.value })}
-                          className={`w-8 h-8 ${color.value} rounded-lg border-2 ${
-                            block.color === color.value ? 'border-slate-800' : 'border-slate-200'
-                          } hover:scale-110 transition-transform`}
-                        />
-                      ))}
+              )}
+              
+              <Popover open={showCustomization} onOpenChange={setShowCustomization}>
+                <PopoverTrigger asChild>
+                  <Button variant="ghost" size="sm" className="text-slate-500 hover:text-slate-700" title="Personalizza">
+                    <Palette className="w-4 h-4" />
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-80">
+                  <div className="space-y-4">
+                    <div>
+                      <label className="text-sm font-medium text-slate-700 mb-2 block">Colore</label>
+                      <div className="grid grid-cols-4 gap-2">
+                        {colors.map((color) => (
+                          <button
+                            key={color.value}
+                            onClick={() => onCustomize(block.id, { color: color.value })}
+                            className={`w-8 h-8 ${color.value} rounded-lg border-2 ${
+                              block.color === color.value ? 'border-slate-800 ring-2 ring-slate-300' : 'border-slate-200'
+                            } hover:scale-110 transition-transform`}
+                            title={color.name}
+                          />
+                        ))}
+                      </div>
+                    </div>
+                    <div>
+                      <label className="text-sm font-medium text-slate-700 mb-2 block">Icona</label>
+                      <div className="grid grid-cols-8 gap-2">
+                        {icons.map((icon) => (
+                          <button
+                            key={icon}
+                            onClick={() => onCustomize(block.id, { icon })}
+                            className={`w-8 h-8 rounded-lg border-2 ${
+                              block.icon === icon ? 'border-slate-800 bg-slate-100' : 'border-slate-200'
+                            } hover:bg-slate-50 transition-colors flex items-center justify-center text-lg`}
+                          >
+                            {icon}
+                          </button>
+                        ))}
+                      </div>
                     </div>
                   </div>
-                  <div>
-                    <label className="text-sm font-medium text-slate-700 mb-2 block">Icona</label>
-                    <div className="grid grid-cols-6 gap-2">
-                      {icons.map((icon) => (
-                        <button
-                          key={icon}
-                          onClick={() => onCustomize(block.id, { icon })}
-                          className={`w-8 h-8 rounded-lg border-2 ${
-                            block.icon === icon ? 'border-slate-800 bg-slate-100' : 'border-slate-200'
-                          } hover:bg-slate-50 transition-colors flex items-center justify-center text-lg`}
-                        >
-                          {icon}
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                </div>
-              </PopoverContent>
-            </Popover>
-            
+                </PopoverContent>
+              </Popover>
+              
+              {canDelete && (
+                <Button
+                  size="sm"
+                  variant="ghost"
+                  onClick={() => onDelete(block.id)}
+                  className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                  title="Elimina sezione"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </Button>
+              )}
+            </div>
+
             {getConfidenceBadge(block.aiConfidence)}
-            {block.isRequired && (
-              <Badge variant="outline" className="text-xs border-orange-300 text-orange-700">
-                Obbligatorio
-              </Badge>
-            )}
             {block.isComplete ? (
               <CheckCircle className="w-5 h-5 text-green-500" />
             ) : (
@@ -184,7 +225,7 @@ const ReportBlock = ({ block, onUpdate, onCustomize, onDelete, canDelete = true 
           placeholder={`Inserisci il contenuto per ${localTitle.toLowerCase()}...`}
           value={block.content}
           onChange={(e) => onUpdate(block.id, e.target.value)}
-          className="min-h-32 text-sm leading-relaxed resize-none border-slate-200 focus:border-blue-400 focus:ring-blue-400"
+          className="min-h-40 text-sm leading-relaxed resize-none border-slate-200 focus:border-blue-400 focus:ring-blue-400"
         />
         
         {/* Attachments preview */}
@@ -229,10 +270,10 @@ const ReportBlock = ({ block, onUpdate, onCustomize, onDelete, canDelete = true 
               variant="outline"
               onClick={handleSuggest}
               disabled={isSuggesting}
-              className="text-xs bg-purple-50 border-purple-200 text-purple-700 hover:bg-purple-100"
+              className="text-xs bg-gradient-to-r from-purple-50 to-pink-50 border-purple-200 text-purple-700 hover:from-purple-100 hover:to-pink-100"
             >
               <Sparkles className="w-3 h-3 mr-1" />
-              {isSuggesting ? 'Suggerendo...' : 'AI Suggerimenti'}
+              {isSuggesting ? 'Suggerendo...' : 'Suggerimenti AI'}
             </Button>
           </div>
           
@@ -240,16 +281,6 @@ const ReportBlock = ({ block, onUpdate, onCustomize, onDelete, canDelete = true 
             <span className="text-xs text-slate-500">
               {block.content.length} caratteri
             </span>
-            {canDelete && (
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={() => onDelete(block.id)}
-                className="text-red-500 hover:text-red-700 hover:bg-red-50"
-              >
-                <Trash2 className="w-3 h-3" />
-              </Button>
-            )}
           </div>
         </div>
       </CardContent>
