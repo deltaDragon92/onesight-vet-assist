@@ -1,13 +1,17 @@
-import React from 'react';
+
+import React, { useState } from 'react';
 import { Camera, FileText, BookOpen, Clock, Activity, Users, TrendingUp, AlertCircle, Play } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
+import PatientSelection from './PatientSelection';
 
 interface DashboardProps {
-  onStartNewVisit?: () => void;
+  onStartNewVisit?: (patientName?: string) => void;
 }
 
 const Dashboard = ({ onStartNewVisit }: DashboardProps) => {
+  const [showPatientSelection, setShowPatientSelection] = useState(false);
+
   const quickStats = [
     { title: 'Esami Oggi', value: '12', icon: Camera, color: 'bg-blue-500' },
     { title: 'Referti Completati', value: '8', icon: FileText, color: 'bg-green-500' },
@@ -52,12 +56,24 @@ const Dashboard = ({ onStartNewVisit }: DashboardProps) => {
     { patient: 'Rocky (Pastore Tedesco)', type: 'Eco Toracica', time: '12:00', status: 'scheduled' }
   ];
 
+  const handleStartNewVisit = () => {
+    setShowPatientSelection(true);
+  };
+
+  const handlePatientSelected = (patient?: any) => {
+    const patientName = patient ? patient.name : undefined;
+    if (onStartNewVisit) {
+      onStartNewVisit(patientName);
+    }
+    setShowPatientSelection(false);
+  };
+
   return (
     <div className="p-6 space-y-6">
       {/* Start New Visit Button */}
       <div className="flex justify-center">
         <Button 
-          onClick={onStartNewVisit}
+          onClick={handleStartNewVisit}
           className="h-16 px-8 text-lg font-semibold bg-gradient-to-r from-blue-600 to-teal-600 hover:from-blue-700 hover:to-teal-700 text-white shadow-lg"
         >
           <Play className="w-6 h-6 mr-3" />
@@ -169,6 +185,13 @@ const Dashboard = ({ onStartNewVisit }: DashboardProps) => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Patient Selection Dialog */}
+      <PatientSelection
+        isOpen={showPatientSelection}
+        onClose={() => setShowPatientSelection(false)}
+        onPatientSelected={handlePatientSelected}
+      />
     </div>
   );
 };
