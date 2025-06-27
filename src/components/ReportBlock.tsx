@@ -1,6 +1,5 @@
-
 import React, { useState } from 'react';
-import { Bot, Trash2, GripVertical, AlertCircle, CheckCircle, Sparkles, Palette, ImageIcon, MessageCircle, Edit3, MessageSquare } from 'lucide-react';
+import { Bot, Trash2, GripVertical, AlertCircle, CheckCircle, Sparkles, Palette, ImageIcon, MessageCircle, Edit3, MessageSquare, Copy, Camera, Video, Table, Mic, Clock, Tag, List } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -19,20 +18,40 @@ interface ReportBlockProps {
     aiConfidence?: 'low' | 'medium' | 'high';
     isComplete: boolean;
     attachments?: string[];
+    tags?: string[];
+    lastModified?: Date;
   };
   onUpdate: (id: string, content: string) => void;
   onCustomize: (id: string, updates: any) => void;
   onDelete: (id: string) => void;
+  onDuplicate?: (id: string) => void;
   onAIChat?: () => void;
+  onAddQuickText?: (text: string) => void;
+  quickChecklist?: string[];
+  suggestedTags?: string[];
   canDelete?: boolean;
 }
 
-const ReportBlock = ({ block, onUpdate, onCustomize, onDelete, onAIChat, canDelete = true }: ReportBlockProps) => {
+const ReportBlock = ({ 
+  block, 
+  onUpdate, 
+  onCustomize, 
+  onDelete, 
+  onDuplicate,
+  onAIChat, 
+  onAddQuickText,
+  quickChecklist = [],
+  suggestedTags = [],
+  canDelete = true 
+}: ReportBlockProps) => {
   const [isEditing, setIsEditing] = useState(false);
   const [localTitle, setLocalTitle] = useState(block.title);
   const [isSuggesting, setIsSuggesting] = useState(false);
   const [showCustomization, setShowCustomization] = useState(false);
+  const [showQuickActions, setShowQuickActions] = useState(false);
+  const [showChecklist, setShowChecklist] = useState(false);
   const [imageComment, setImageComment] = useState('');
+  const [isRecording, setIsRecording] = useState(false);
 
   const colors = [
     { name: 'Blu', value: 'bg-blue-500', border: 'border-blue-200', bg: 'bg-blue-50' },
@@ -42,10 +61,10 @@ const ReportBlock = ({ block, onUpdate, onCustomize, onDelete, onAIChat, canDele
     { name: 'Arancio', value: 'bg-orange-500', border: 'border-orange-200', bg: 'bg-orange-50' },
     { name: 'Rosa', value: 'bg-pink-500', border: 'border-pink-200', bg: 'bg-pink-50' },
     { name: 'Indaco', value: 'bg-indigo-500', border: 'border-indigo-200', bg: 'bg-indigo-50' },
-    { name: 'Grigio', value: 'bg-slate-500', border: 'border-slate-200', bg: 'bg-slate-50' }
+    { name: 'Teal', value: 'bg-teal-500', border: 'border-teal-200', bg: 'bg-teal-50' }
   ];
 
-  const icons = ['🔍', '🫀', '🧠', '🦴', '🩺', '📋', '📅', '💊', '🩹', '📝', '⚕️', '🔬', '🏥', '🎯', '📊', '💡'];
+  const modernIcons = ['🔍', '🫀', '🧠', '🦴', '🩺', '📋', '💊', '🩹', '📝', '⚕️', '🔬', '🎯', '📊', '💡', '🧪', '📈'];
 
   const getConfidenceBadge = (confidence?: string) => {
     if (!confidence) return null;
@@ -85,6 +104,30 @@ const ReportBlock = ({ block, onUpdate, onCustomize, onDelete, onAIChat, canDele
   const handleTitleSave = () => {
     onCustomize(block.id, { title: localTitle });
     setIsEditing(false);
+  };
+
+  const handleAddTag = (tag: string) => {
+    const currentTags = block.tags || [];
+    if (!currentTags.includes(tag)) {
+      onCustomize(block.id, { tags: [...currentTags, tag] });
+    }
+  };
+
+  const handleRemoveTag = (tagToRemove: string) => {
+    const currentTags = block.tags || [];
+    onCustomize(block.id, { tags: currentTags.filter(tag => tag !== tagToRemove) });
+  };
+
+  const handleVoiceRecording = () => {
+    setIsRecording(!isRecording);
+    // Simulate voice recording functionality
+    if (!isRecording) {
+      setTimeout(() => {
+        const mockTranscript = "Testo trascritto dal dettato vocale...";
+        onUpdate(block.id, block.content + (block.content ? '\n\n' : '') + mockTranscript);
+        setIsRecording(false);
+      }, 3000);
+    }
   };
 
   const colorConfig = colors.find(c => c.value === block.color) || colors[0];
@@ -140,8 +183,49 @@ const ReportBlock = ({ block, onUpdate, onCustomize, onDelete, onAIChat, canDele
           </div>
           
           <div className="flex items-center space-x-2">
+            {/* Tags */}
+            {block.tags && block.tags.length > 0 && (
+              <div className="flex items-center space-x-1">
+                {block.tags.slice(0, 2).map((tag) => (
+                  <Badge 
+                    key={tag} 
+                    variant="outline" 
+                    className="text-xs bg-blue-50 text-blue-700 border-blue-200 cursor-pointer"
+                    onClick={() => handleRemoveTag(tag)}
+                  >
+                    {tag} ×
+                  </Badge>
+                ))}
+                {block.tags.length > 2 && (
+                  <Badge variant="outline" className="text-xs bg-slate-50 text-slate-600">
+                    +{block.tags.length - 2}
+                  </Badge>
+                )}
+              </div>
+            )}
+
+            {/* Last modified indicator */}
+            {block.lastModified && (
+              <div className="flex items-center text-xs text-slate-500">
+                <Clock className="w-3 h-3 mr-1" />
+                {block.lastModified.toLocaleTimeString('it-IT', { hour: '2-digit', minute: '2-digit' })}
+              </div>
+            )}
+
             {/* Action buttons - visible on hover */}
             <div className="flex items-center space-x-1 opacity-0 group-hover:opacity-100 transition-opacity">
+              {onDuplicate && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => onDuplicate(block.id)}
+                  className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
+                  title="Duplica sezione"
+                >
+                  <Copy className="w-4 h-4" />
+                </Button>
+              )}
+              
               {onAIChat && (
                 <Button
                   variant="ghost"
@@ -180,7 +264,7 @@ const ReportBlock = ({ block, onUpdate, onCustomize, onDelete, onAIChat, canDele
                     <div>
                       <label className="text-sm font-medium text-slate-700 mb-2 block">Icona</label>
                       <div className="grid grid-cols-8 gap-2">
-                        {icons.map((icon) => (
+                        {modernIcons.map((icon) => (
                           <button
                             key={icon}
                             onClick={() => onCustomize(block.id, { icon })}
@@ -218,6 +302,28 @@ const ReportBlock = ({ block, onUpdate, onCustomize, onDelete, onAIChat, canDele
             )}
           </div>
         </div>
+
+        {/* Tags management */}
+        {suggestedTags.length > 0 && (
+          <div className="flex items-center space-x-2 mt-2">
+            <Tag className="w-4 h-4 text-slate-500" />
+            <div className="flex flex-wrap gap-1">
+              {suggestedTags.map((tag) => (
+                <button
+                  key={tag}
+                  onClick={() => handleAddTag(tag)}
+                  className={`text-xs px-2 py-1 rounded-full border transition-colors ${
+                    block.tags?.includes(tag)
+                      ? 'bg-blue-100 text-blue-700 border-blue-300'
+                      : 'bg-slate-50 text-slate-600 border-slate-200 hover:bg-slate-100'
+                  }`}
+                >
+                  {tag}
+                </button>
+              ))}
+            </div>
+          </div>
+        )}
       </CardHeader>
       
       <CardContent className="space-y-4">
@@ -228,6 +334,105 @@ const ReportBlock = ({ block, onUpdate, onCustomize, onDelete, onAIChat, canDele
           className="min-h-40 text-sm leading-relaxed resize-none border-slate-200 focus:border-blue-400 focus:ring-blue-400"
         />
         
+        {/* Integrated media upload and quick actions */}
+        <div className="flex items-center justify-between pt-2 border-t border-slate-200">
+          <div className="flex items-center space-x-2">
+            {/* Media uploads */}
+            <label className="cursor-pointer">
+              <input
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => {
+                  // Handle image upload
+                  console.log('Image upload:', e.target.files?.[0]);
+                }}
+              />
+              <Button size="sm" variant="outline" className="text-xs bg-blue-50 border-blue-200 text-blue-700">
+                <Camera className="w-3 h-3 mr-1" />
+                Immagine
+              </Button>
+            </label>
+            
+            <label className="cursor-pointer">
+              <input
+                type="file"
+                accept="video/*"
+                className="hidden"
+                onChange={(e) => {
+                  // Handle video upload
+                  console.log('Video upload:', e.target.files?.[0]);
+                }}
+              />
+              <Button size="sm" variant="outline" className="text-xs bg-purple-50 border-purple-200 text-purple-700">
+                <Video className="w-3 h-3 mr-1" />
+                Video
+              </Button>
+            </label>
+
+            {/* Voice recording */}
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={handleVoiceRecording}
+              className={`text-xs ${
+                isRecording 
+                  ? 'bg-red-100 border-red-300 text-red-700 animate-pulse' 
+                  : 'bg-green-50 border-green-200 text-green-700'
+              }`}
+            >
+              <Mic className="w-3 h-3 mr-1" />
+              {isRecording ? 'Recording...' : 'Dettato'}
+            </Button>
+
+            {/* Quick checklist */}
+            {quickChecklist.length > 0 && (
+              <Popover open={showChecklist} onOpenChange={setShowChecklist}>
+                <PopoverTrigger asChild>
+                  <Button size="sm" variant="outline" className="text-xs bg-orange-50 border-orange-200 text-orange-700">
+                    <List className="w-3 h-3 mr-1" />
+                    Checklist
+                  </Button>
+                </PopoverTrigger>
+                <PopoverContent className="w-80">
+                  <div className="space-y-2">
+                    <h4 className="font-medium text-sm text-slate-700">Aggiungi rapidamente:</h4>
+                    {quickChecklist.map((item, index) => (
+                      <button
+                        key={index}
+                        onClick={() => {
+                          onAddQuickText?.(item);
+                          setShowChecklist(false);
+                        }}
+                        className="block w-full text-left p-2 text-xs rounded hover:bg-slate-50 border border-slate-200"
+                      >
+                        {item}
+                      </button>
+                    ))}
+                  </div>
+                </PopoverContent>
+              </Popover>
+            )}
+
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={handleSuggest}
+              disabled={isSuggesting}
+              className="text-xs bg-gradient-to-r from-purple-50 to-pink-50 border-purple-200 text-purple-700 hover:from-purple-100 hover:to-pink-100"
+            >
+              <Sparkles className="w-3 h-3 mr-1" />
+              {isSuggesting ? 'Suggerendo...' : 'AI Suggerimenti'}
+            </Button>
+          </div>
+          
+          <div className="flex items-center space-x-2">
+            <span className="text-xs text-slate-500">
+              {block.content.length} caratteri
+            </span>
+          </div>
+        </div>
+
         {/* Attachments preview */}
         {block.attachments && block.attachments.length > 0 && (
           <div className="space-y-2">
@@ -262,27 +467,6 @@ const ReportBlock = ({ block, onUpdate, onCustomize, onDelete, onAIChat, canDele
             </div>
           </div>
         )}
-        
-        <div className="flex items-center justify-between pt-2 border-t border-slate-200">
-          <div className="flex items-center space-x-2">
-            <Button
-              size="sm"
-              variant="outline"
-              onClick={handleSuggest}
-              disabled={isSuggesting}
-              className="text-xs bg-gradient-to-r from-purple-50 to-pink-50 border-purple-200 text-purple-700 hover:from-purple-100 hover:to-pink-100"
-            >
-              <Sparkles className="w-3 h-3 mr-1" />
-              {isSuggesting ? 'Suggerendo...' : 'Suggerimenti AI'}
-            </Button>
-          </div>
-          
-          <div className="flex items-center space-x-2">
-            <span className="text-xs text-slate-500">
-              {block.content.length} caratteri
-            </span>
-          </div>
-        </div>
       </CardContent>
     </Card>
   );

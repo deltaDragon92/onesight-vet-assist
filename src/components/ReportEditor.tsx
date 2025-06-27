@@ -1,15 +1,18 @@
-
 import React, { useState } from 'react';
-import { FileText, Plus, Eye, Share2, CheckCircle, Bot, Search, Clock, AlertCircle, Camera, Video, Palette, Layout, Upload, MessageSquare, Sparkles } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
+import { FileText, Plus, Eye, Share2, CheckCircle, Bot, Search, Clock, AlertCircle, Camera, Video, Palette, Layout, Upload, MessageSquare, Sparkles, BookOpen, Copy, Mic, Table } from 'lucide-react';
 import ReportBlock from './ReportBlock';
 import ReportPreview from './ReportPreview';
 import MedicalAIChat from './MedicalAIChat';
 import MediaAttachments from './MediaAttachments';
 import TemplateSelector from './TemplateSelector';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Badge } from '@/components/ui/badge';
+import { Progress } from '@/components/ui/progress';
+import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import MedicalDictionary from './MedicalDictionary';
 
 interface ReportBlock {
   id: string;
@@ -21,6 +24,8 @@ interface ReportBlock {
   aiConfidence?: 'low' | 'medium' | 'high';
   isComplete: boolean;
   attachments?: string[];
+  tags?: string[];
+  lastModified?: Date;
 }
 
 interface ReportEditorProps {
@@ -39,11 +44,14 @@ const ReportEditor = ({ patientName = "Luna", onReportCompleted, onReportShared 
   const [reportCompleted, setReportCompleted] = useState(false);
   const [reportShared, setReportShared] = useState(false);
   const [mediaAttachments, setMediaAttachments] = useState<any[]>([]);
+  const [searchTerm, setSearchTerm] = useState('');
+  const [showDictionary, setShowDictionary] = useState(false);
 
   const completionPercentage = blocks.length > 0 ? Math.round((blocks.filter(b => b.isComplete).length / blocks.length) * 100) : 0;
-  const canComplete = blocks.length > 0 && blocks.every(b => b.isComplete);
+  const canComplete = blocks.length > 0 && blocks.some(b => b.isComplete);
 
-  const defaultColors = [
+  const modernIcons = ['🔍', '🫀', '🧠', '🦴', '🩺', '📋', '💊', '🩹', '📝', '⚕️', '🔬', '🎯', '📊', '💡', '🧪', '📈'];
+  const colorPalette = [
     'bg-blue-500',
     'bg-green-500', 
     'bg-purple-500',
@@ -51,10 +59,17 @@ const ReportEditor = ({ patientName = "Luna", onReportCompleted, onReportShared 
     'bg-red-500',
     'bg-pink-500',
     'bg-indigo-500',
-    'bg-slate-500'
+    'bg-teal-500'
   ];
 
-  const defaultIcons = ['🔍', '🫀', '🧠', '🦴', '🩺', '📋', '📅', '💊', '🩹', '📝', '⚕️', '🔬'];
+  const suggestedTags = ['cardiaco', 'addome', 'neurologico', 'respiratorio', 'muscolo-scheletrico', 'dermatologico'];
+  const quickChecklist = [
+    'Nessuna anomalia visiva rilevata',
+    'Flusso sanguigno regolare',
+    'Strutture anatomiche nella norma',
+    'Dimensioni appropriate per età e specie',
+    'Funzionalità preservata'
+  ];
 
   const handleAddSection = () => {
     const newBlock: ReportBlock = {
@@ -62,10 +77,12 @@ const ReportEditor = ({ patientName = "Luna", onReportCompleted, onReportShared 
       type: 'custom',
       title: 'Nuova Sezione',
       content: '',
-      color: defaultColors[blocks.length % defaultColors.length],
-      icon: defaultIcons[blocks.length % defaultIcons.length],
+      color: colorPalette[blocks.length % colorPalette.length],
+      icon: modernIcons[blocks.length % modernIcons.length],
       isComplete: false,
-      attachments: []
+      attachments: [],
+      tags: [],
+      lastModified: new Date()
     };
     setBlocks(prev => [...prev, newBlock]);
   };
@@ -73,14 +90,14 @@ const ReportEditor = ({ patientName = "Luna", onReportCompleted, onReportShared 
   const handleBlockUpdate = (blockId: string, content: string) => {
     setBlocks(prev => prev.map(block => 
       block.id === blockId 
-        ? { ...block, content, isComplete: content.trim().length > 10 }
+        ? { ...block, content, isComplete: content.trim().length > 10, lastModified: new Date() }
         : block
     ));
   };
 
   const handleBlockCustomize = (blockId: string, updates: Partial<ReportBlock>) => {
     setBlocks(prev => prev.map(block => 
-      block.id === blockId ? { ...block, ...updates } : block
+      block.id === blockId ? { ...block, ...updates, lastModified: new Date() } : block
     ));
   };
 
@@ -88,11 +105,17 @@ const ReportEditor = ({ patientName = "Luna", onReportCompleted, onReportShared 
     setBlocks(prev => prev.filter(b => b.id !== blockId));
   };
 
-  const handleReorderBlocks = (startIndex: number, endIndex: number) => {
-    const result = Array.from(blocks);
-    const [removed] = result.splice(startIndex, 1);
-    result.splice(endIndex, 0, removed);
-    setBlocks(result);
+  const handleDuplicateBlock = (blockId: string) => {
+    const blockToDuplicate = blocks.find(b => b.id === blockId);
+    if (blockToDuplicate) {
+      const duplicatedBlock: ReportBlock = {
+        ...blockToDuplicate,
+        id: Date.now().toString(),
+        title: `${blockToDuplicate.title} (copia)`,
+        lastModified: new Date()
+      };
+      setBlocks(prev => [...prev, duplicatedBlock]);
+    }
   };
 
   const handleOpenAIChat = (blockId?: string) => {
@@ -102,28 +125,13 @@ const ReportEditor = ({ patientName = "Luna", onReportCompleted, onReportShared 
 
   const handleAIResponse = (response: string, targetBlockId?: string) => {
     if (targetBlockId) {
-      // Insert AI response into specific block
       handleBlockUpdate(targetBlockId, response);
     } else if (selectedBlockForAI) {
-      // Insert into selected block
       const currentBlock = blocks.find(b => b.id === selectedBlockForAI);
       if (currentBlock) {
         const newContent = currentBlock.content + (currentBlock.content ? '\n\n' : '') + response;
         handleBlockUpdate(selectedBlockForAI, newContent);
       }
-    } else {
-      // Create new section with AI response
-      const newBlock: ReportBlock = {
-        id: Date.now().toString(),
-        type: 'custom',
-        title: 'Sezione AI',
-        content: response,
-        color: defaultColors[blocks.length % defaultColors.length],
-        icon: '🧠',
-        isComplete: true,
-        attachments: []
-      };
-      setBlocks(prev => [...prev, newBlock]);
     }
     setShowAIChat(false);
     setSelectedBlockForAI(null);
@@ -139,21 +147,23 @@ const ReportEditor = ({ patientName = "Luna", onReportCompleted, onReportShared 
     onReportShared?.();
   };
 
-  const handleMediaUpload = (type: 'image' | 'video', file: File) => {
-    const newAttachment = {
-      id: Date.now().toString(),
-      type,
-      file,
-      name: file.name,
-      size: file.size,
-      timestamp: new Date()
-    };
-    setMediaAttachments(prev => [...prev, newAttachment]);
+  const handleAddQuickText = (blockId: string, text: string) => {
+    const currentBlock = blocks.find(b => b.id === blockId);
+    if (currentBlock) {
+      const newContent = currentBlock.content + (currentBlock.content ? '\n• ' : '• ') + text;
+      handleBlockUpdate(blockId, newContent);
+    }
   };
+
+  const filteredBlocks = blocks.filter(block => 
+    !searchTerm || 
+    block.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    block.content.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="p-4 space-y-4 max-w-full overflow-hidden bg-gradient-to-br from-slate-50 to-blue-50 min-h-screen">
-      {/* Header con progress */}
+      {/* Header con search e progress */}
       <Card className="bg-white shadow-lg border-0">
         <CardContent className="p-6">
           <div className="flex items-center justify-between mb-6">
@@ -167,6 +177,16 @@ const ReportEditor = ({ patientName = "Luna", onReportCompleted, onReportShared 
               </div>
             </div>
             <div className="flex items-center space-x-3">
+              {/* Search bar */}
+              <div className="relative">
+                <Search className="w-4 h-4 absolute left-3 top-3 text-slate-400" />
+                <Input
+                  placeholder="Cerca nel referto..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10 w-64"
+                />
+              </div>
               {reportShared && (
                 <Badge className="bg-blue-100 text-blue-700 border-blue-300 px-3 py-1">
                   <Share2 className="w-4 h-4 mr-2" />
@@ -184,7 +204,7 @@ const ReportEditor = ({ patientName = "Luna", onReportCompleted, onReportShared 
           {blocks.length > 0 && (
             <div className="space-y-3">
               <div className="flex justify-between text-sm font-medium">
-                <span className="text-slate-700">Sezioni completate</span>
+                <span className="text-slate-700">Sezioni completate ({blocks.filter(b => b.isComplete).length}/{blocks.length})</span>
                 <span className="text-slate-900">{completionPercentage}%</span>
               </div>
               <Progress value={completionPercentage} className="h-3 bg-slate-200" />
@@ -196,16 +216,16 @@ const ReportEditor = ({ patientName = "Luna", onReportCompleted, onReportShared 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         {/* Editor principale */}
         <div className="xl:col-span-2 space-y-6">
-          {/* Controlli avanzati */}
+          {/* Controlli principali */}
           <Card className="bg-white shadow-lg border-0">
             <CardContent className="p-6">
-              <div className="grid grid-cols-2 lg:grid-cols-4 gap-3">
+              <div className="grid grid-cols-2 lg:grid-cols-5 gap-3">
                 <Button 
                   onClick={() => handleOpenAIChat()}
                   className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 text-white shadow-lg h-12"
                 >
                   <MessageSquare className="w-5 h-5 mr-2" />
-                  Chat AI Medica
+                  Chat AI
                 </Button>
                 
                 <Button 
@@ -219,9 +239,10 @@ const ReportEditor = ({ patientName = "Luna", onReportCompleted, onReportShared 
                 
                 <Button 
                   variant="outline"
+                  onClick={() => setShowDictionary(true)}
                   className="border-2 border-green-200 text-green-700 hover:bg-green-50 h-12"
                 >
-                  <Search className="w-5 h-5 mr-2" />
+                  <BookOpen className="w-5 h-5 mr-2" />
                   Dizionario
                 </Button>
                 
@@ -233,41 +254,21 @@ const ReportEditor = ({ patientName = "Luna", onReportCompleted, onReportShared 
                   <Eye className="w-5 h-5 mr-2" />
                   {showPreview ? 'Nascondi' : 'Mostra'} Preview
                 </Button>
-              </div>
-              
-              <div className="flex items-center space-x-3 mt-4 pt-4 border-t">
-                <label className="flex items-center space-x-2 cursor-pointer">
-                  <input
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={(e) => e.target.files?.[0] && handleMediaUpload('image', e.target.files[0])}
-                  />
-                  <Button variant="outline" size="sm" className="bg-blue-50 border-blue-200 text-blue-700">
-                    <Camera className="w-4 h-4 mr-2" />
-                    📎 Immagine
-                  </Button>
-                </label>
-                
-                <label className="flex items-center space-x-2 cursor-pointer">
-                  <input
-                    type="file"
-                    accept="video/*"
-                    className="hidden"
-                    onChange={(e) => e.target.files?.[0] && handleMediaUpload('video', e.target.files[0])}
-                  />
-                  <Button variant="outline" size="sm" className="bg-purple-50 border-purple-200 text-purple-700">
-                    <Video className="w-4 h-4 mr-2" />
-                    📽️ Video
-                  </Button>
-                </label>
+
+                <Button 
+                  variant="outline"
+                  className="border-2 border-indigo-200 text-indigo-700 hover:bg-indigo-50 h-12"
+                >
+                  <Mic className="w-5 h-5 mr-2" />
+                  Dettato
+                </Button>
               </div>
             </CardContent>
           </Card>
 
           {/* Sezioni del referto */}
           <div className="space-y-4">
-            {blocks.length === 0 ? (
+            {filteredBlocks.length === 0 && blocks.length === 0 ? (
               <Card className="bg-gradient-to-br from-blue-50 to-purple-50 shadow-lg border-0">
                 <CardContent className="p-12 text-center">
                   <div className="w-20 h-20 bg-gradient-to-r from-blue-400 to-purple-400 rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg">
@@ -288,14 +289,18 @@ const ReportEditor = ({ patientName = "Luna", onReportCompleted, onReportShared 
               </Card>
             ) : (
               <>
-                {blocks.map((block, index) => (
+                {filteredBlocks.map((block, index) => (
                   <ReportBlock
                     key={block.id}
                     block={block}
                     onUpdate={handleBlockUpdate}
                     onCustomize={handleBlockCustomize}
                     onDelete={handleDeleteBlock}
+                    onDuplicate={() => handleDuplicateBlock(block.id)}
                     onAIChat={() => handleOpenAIChat(block.id)}
+                    onAddQuickText={(text) => handleAddQuickText(block.id, text)}
+                    quickChecklist={quickChecklist}
+                    suggestedTags={suggestedTags}
                     canDelete={true}
                   />
                 ))}
@@ -312,14 +317,6 @@ const ReportEditor = ({ patientName = "Luna", onReportCompleted, onReportShared 
             )}
           </div>
 
-          {/* Media Attachments */}
-          {mediaAttachments.length > 0 && (
-            <MediaAttachments 
-              attachments={mediaAttachments}
-              onRemove={(id) => setMediaAttachments(prev => prev.filter(a => a.id !== id))}
-            />
-          )}
-
           {/* Azioni finali */}
           {blocks.length > 0 && (
             <Card className="bg-white shadow-lg border-0">
@@ -333,8 +330,8 @@ const ReportEditor = ({ patientName = "Luna", onReportCompleted, onReportShared 
                       </div>
                     ) : (
                       <div className="flex items-center text-orange-600">
-                        <AlertCircle className="w-6 h-6 mr-3" />
-                        <span className="font-semibold text-lg">Completare le sezioni</span>
+                        <Clock className="w-6 h-6 mr-3" />
+                        <span className="font-semibold text-lg">Almeno una sezione deve essere compilata</span>
                       </div>
                     )}
                   </div>
@@ -404,7 +401,7 @@ const ReportEditor = ({ patientName = "Luna", onReportCompleted, onReportShared 
               <CardContent className="p-0">
                 <div className="max-h-96 overflow-y-auto">
                   <ReportPreview 
-                    blocks={blocks}
+                    blocks={filteredBlocks}
                     patientName={patientName}
                     mode={previewMode}
                     isLive={true}
@@ -451,6 +448,11 @@ const ReportEditor = ({ patientName = "Luna", onReportCompleted, onReportShared 
         selectedBlockId={selectedBlockForAI}
       />
 
+      <MedicalDictionary
+        isOpen={showDictionary}
+        onClose={() => setShowDictionary(false)}
+      />
+
       <TemplateSelector
         isOpen={showTemplateSelector}
         onClose={() => setShowTemplateSelector(false)}
@@ -460,10 +462,12 @@ const ReportEditor = ({ patientName = "Luna", onReportCompleted, onReportShared 
             type: 'custom',
             title: template?.title || 'Nuova Sezione',
             content: template?.content || '',
-            color: template?.color || defaultColors[blocks.length % defaultColors.length],
-            icon: template?.icon || defaultIcons[blocks.length % defaultIcons.length],
+            color: template?.color || colorPalette[blocks.length % colorPalette.length],
+            icon: template?.icon || modernIcons[blocks.length % modernIcons.length],
             isComplete: false,
-            attachments: []
+            attachments: [],
+            tags: [],
+            lastModified: new Date()
           };
           setBlocks(prev => [...prev, newBlock]);
         }}
