@@ -1,26 +1,26 @@
-
 import React, { useState } from 'react';
-import { Search, Plus, Calendar, User, X, ChevronRight, Heart, Stethoscope, PawPrint } from 'lucide-react';
+import { Search, Plus, Calendar, X, Trash2, PawPrint } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
-import { useForm } from 'react-hook-form';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from '@/components/ui/dialog';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
 
 interface Patient {
   id: string;
   name: string;
   species: string;
   breed: string;
-  age: string;
-  microchip?: string;
+  age: number;
+  microchip: string;
   ownerName: string;
-  ownerContact: string;
   veterinarian: string;
   lastVisit: string;
-  notes?: string;
+  notes: string;
 }
 
 interface PatientSelectionProps {
@@ -29,86 +29,83 @@ interface PatientSelectionProps {
   onPatientSelected: (patient?: Patient) => void;
 }
 
-const mockPatients: Patient[] = [
-  {
-    id: '1',
-    name: 'Luna',
-    species: 'Cane',
-    breed: 'Labrador Retriever',
-    age: '3 anni',
-    microchip: '900108001234567',
-    ownerName: 'Maria Rossi',
-    ownerContact: '+39 340 1234567',
-    veterinarian: 'Dr. Mario Rossi',
-    lastVisit: '2024-06-20',
-    notes: 'Paziente docile, allergia ai polli'
-  },
-  {
-    id: '2',
-    name: 'Rex',
-    species: 'Cane',
-    breed: 'Pastore Tedesco',
-    age: '7 anni',
-    microchip: '900108001234568',
-    ownerName: 'Giovanni Bianchi',
-    ownerContact: '+39 347 9876543',
-    veterinarian: 'Dr. Laura Verdi',
-    lastVisit: '2024-06-15',
-    notes: 'Controllo cardiaco periodico'
-  },
-  {
-    id: '3',
-    name: 'Mimì',
-    species: 'Gatto',
-    breed: 'Persiano',
-    age: '5 anni',
-    microchip: '900108001234569',
-    ownerName: 'Anna Neri',
-    ownerContact: '+39 335 5555555',
-    veterinarian: 'Dr. Mario Rossi',
-    lastVisit: '2024-06-10',
-    notes: 'Paziente nervoso, necessita sedazione leggera'
-  },
-  {
-    id: '4',
-    name: 'Charlie',
-    species: 'Cane',
-    breed: 'Golden Retriever',
-    age: '2 anni',
-    ownerName: 'Luca Ferrari',
-    ownerContact: '+39 348 1111111',
-    veterinarian: 'Dr. Laura Verdi',
-    lastVisit: '2024-06-25',
-    notes: 'Primo controllo post-operatorio'
-  }
-];
+const veterinarians = ['Dr. Mario Rossi', 'Dr. Laura Verdi', 'Dr. Giuseppe Bianchi'];
 
 const PatientSelection = ({ isOpen, onClose, onPatientSelected }: PatientSelectionProps) => {
-  const [searchTerm, setSearchTerm] = useState('');
-  const [showNewPatientForm, setShowNewPatientForm] = useState(false);
-  const [dateFilter, setDateFilter] = useState('');
-  const [veterinarianFilter, setVeterinarianFilter] = useState('');
-
-  const form = useForm({
-    defaultValues: {
-      name: '',
-      species: '',
-      breed: '',
-      age: '',
-      microchip: '',
-      ownerName: '',
-      ownerContact: '',
-      veterinarian: '',
-      notes: ''
+  const [patients, setPatients] = useState<Patient[]>([
+    {
+      id: '1',
+      name: 'Luna',
+      species: 'Cane',
+      breed: 'Labrador Retriever',
+      age: 3,
+      microchip: '900108001234567',
+      ownerName: 'Maria Rossi',
+      veterinarian: 'Dr. Mario Rossi',
+      lastVisit: '2024-06-20',
+      notes: 'Paziente docile, allergia ai polli'
+    },
+    {
+      id: '2',
+      name: 'Rex',
+      species: 'Cane',
+      breed: 'Pastore Tedesco',
+      age: 7,
+      microchip: '900108001234568',
+      ownerName: 'Giovanni Bianchi',
+      veterinarian: 'Dr. Laura Verdi',
+      lastVisit: '2024-06-15',
+      notes: 'Controllo cardiaco periodico'
+    },
+    {
+      id: '3',
+      name: 'Mimì',
+      species: 'Gatto',
+      breed: 'Persiano',
+      age: 5,
+      microchip: '900108001234569',
+      ownerName: 'Anna Neri',
+      veterinarian: 'Dr. Mario Rossi',
+      lastVisit: '2024-06-10',
+      notes: 'Paziente nervoso, necessita sedazione leggera'
+    },
+    {
+      id: '4',
+      name: 'Charlie',
+      species: 'Cane',
+      breed: 'Golden Retriever',
+      age: 2,
+      microchip: '900108001234570',
+      ownerName: 'Luca Ferrari',
+      veterinarian: 'Dr. Laura Verdi',
+      lastVisit: '2024-06-25',
+      notes: 'Primo controllo post-operatorio'
     }
+  ]);
+
+  const [searchTerm, setSearchTerm] = useState('');
+  const [veterinarianFilter, setVeterinarianFilter] = useState('');
+  const [showNewPatientForm, setShowNewPatientForm] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState<string | null>(null);
+
+  // New patient form state
+  const [newPatient, setNewPatient] = useState({
+    name: '',
+    species: '',
+    breed: '',
+    age: 0,
+    microchip: '',
+    ownerName: '',
+    veterinarian: '',
+    notes: ''
   });
 
-  const filteredPatients = mockPatients.filter(patient => {
+  const filteredPatients = patients.filter(patient => {
     const matchesSearch = patient.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          patient.ownerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                         patient.microchip?.includes(searchTerm);
+                         patient.microchip.includes(searchTerm);
     
-    const matchesVet = !veterinarianFilter || patient.veterinarian.includes(veterinarianFilter);
+    const matchesVet = !veterinarianFilter || patient.veterinarian === veterinarianFilter;
     
     return matchesSearch && matchesVet;
   });
@@ -118,318 +115,332 @@ const PatientSelection = ({ isOpen, onClose, onPatientSelected }: PatientSelecti
     onClose();
   };
 
-  const handleNewPatientSubmit = (data: any) => {
-    const newPatient: Patient = {
+  const handleDeletePatient = (patientId: string) => {
+    setPatients(prev => prev.filter(p => p.id !== patientId));
+    setShowDeleteConfirm(null);
+  };
+
+  const handleSaveNewPatient = () => {
+    if (!newPatient.name || !newPatient.species || !newPatient.breed || !newPatient.age || 
+        !newPatient.microchip || !newPatient.ownerName || !newPatient.veterinarian) {
+      return;
+    }
+
+    const patient: Patient = {
       id: Date.now().toString(),
-      ...data,
+      ...newPatient,
       lastVisit: new Date().toISOString().split('T')[0]
     };
-    onPatientSelected(newPatient);
-    onClose();
+
+    setPatients(prev => [...prev, patient]);
+    setShowNewPatientForm(false);
+    setNewPatient({
+      name: '',
+      species: '',
+      breed: '',
+      age: 0,
+      microchip: '',
+      ownerName: '',
+      veterinarian: '',
+      notes: ''
+    });
   };
 
   const getSpeciesIcon = (species: string) => {
-    return species.toLowerCase().includes('gatto') ? <Heart className="w-4 h-4" /> : <PawPrint className="w-4 h-4" />;
+    return species === 'Gatto' ? '🐱' : '🐶';
   };
 
-  if (showNewPatientForm) {
-    return (
+  return (
+    <>
+      {/* Main Modal */}
       <Dialog open={isOpen} onOpenChange={onClose}>
-        <DialogContent className="max-w-6xl h-[90vh] overflow-hidden">
-          <DialogHeader>
-            <div className="flex items-center justify-between">
-              <DialogTitle className="text-2xl font-bold text-blue-800">Nuovo Paziente</DialogTitle>
-              <Button
-                variant="ghost"
-                size="icon"
-                onClick={() => setShowNewPatientForm(false)}
-                className="h-8 w-8"
-              >
-                <X className="w-4 h-4" />
-              </Button>
-            </div>
-          </DialogHeader>
-          
-          <div className="flex-1 overflow-x-auto">
-            <div className="flex space-x-6 pb-4" style={{ width: 'max-content' }}>
-              {/* Colonna 1: Dati Animale */}
-              <div className="w-80 space-y-4">
-                <div className="bg-blue-50 p-4 rounded-lg">
-                  <h3 className="font-semibold text-blue-800 mb-4 flex items-center">
-                    <PawPrint className="w-5 h-5 mr-2" />
-                    Dati Animale
-                  </h3>
-                  <Form {...form}>
-                    <div className="space-y-4">
-                      <FormField
-                        control={form.control}
-                        name="name"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Nome Animale</FormLabel>
-                            <FormControl>
-                              <Input placeholder="Es. Luna" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="species"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Specie</FormLabel>
-                            <FormControl>
-                              <Input placeholder="Es. Cane" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="breed"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Razza</FormLabel>
-                            <FormControl>
-                              <Input placeholder="Es. Labrador" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                      <FormField
-                        control={form.control}
-                        name="age"
-                        render={({ field }) => (
-                          <FormItem>
-                            <FormLabel>Età</FormLabel>
-                            <FormControl>
-                              <Input placeholder="Es. 3 anni" {...field} />
-                            </FormControl>
-                            <FormMessage />
-                          </FormItem>
-                        )}
-                      />
-                    </div>
-                  </Form>
-                </div>
-              </div>
+        <DialogContent className="max-w-full h-screen m-0 p-0 rounded-none bg-slate-50">
+          <div className="flex flex-col h-full">
+            {/* Header */}
+            <DialogHeader className="flex-row items-center justify-between p-6 bg-white border-b">
+              <DialogTitle className="text-2xl font-semibold text-slate-800">
+                Seleziona o Crea Paziente
+              </DialogTitle>
+              <DialogClose asChild>
+                <Button variant="ghost" size="icon" className="h-8 w-8">
+                  <X className="w-5 h-5" />
+                </Button>
+              </DialogClose>
+            </DialogHeader>
 
-              {/* Colonna 2: Identificazione */}
-              <div className="w-80 space-y-4">
-                <div className="bg-green-50 p-4 rounded-lg">
-                  <h3 className="font-semibold text-green-800 mb-4 flex items-center">
-                    <Search className="w-5 h-5 mr-2" />
-                    Identificazione
-                  </h3>
-                  <div className="space-y-4">
-                    <FormField
-                      control={form.control}
-                      name="microchip"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Microchip</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Es. 900108001234567" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                </div>
+            {/* Search and Filters Row */}
+            <div className="flex gap-4 p-6 bg-white border-b">
+              <div className="w-[60%] relative">
+                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
+                <Input
+                  placeholder="Cerca per nome, proprietario o microchip…"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="pl-10 h-10"
+                />
               </div>
-
-              {/* Colonna 3: Proprietario */}
-              <div className="w-80 space-y-4">
-                <div className="bg-orange-50 p-4 rounded-lg">
-                  <h3 className="font-semibold text-orange-800 mb-4 flex items-center">
-                    <User className="w-5 h-5 mr-2" />
-                    Proprietario
-                  </h3>
-                  <div className="space-y-4">
-                    <FormField
-                      control={form.control}
-                      name="ownerName"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Nome e Cognome</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Es. Mario Rossi" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="ownerContact"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Contatto</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Es. +39 340 1234567" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                </div>
+              <div className="w-[25%]">
+                <Select value={veterinarianFilter} onValueChange={setVeterinarianFilter}>
+                  <SelectTrigger className="h-10">
+                    <SelectValue placeholder="Filtra per veterinario" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="">Tutti i veterinari</SelectItem>
+                    {veterinarians.map(vet => (
+                      <SelectItem key={vet} value={vet}>{vet}</SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
-
-              {/* Colonna 4: Informazioni Cliniche */}
-              <div className="w-80 space-y-4">
-                <div className="bg-purple-50 p-4 rounded-lg">
-                  <h3 className="font-semibold text-purple-800 mb-4 flex items-center">
-                    <Stethoscope className="w-5 h-5 mr-2" />
-                    Info Cliniche
-                  </h3>
-                  <div className="space-y-4">
-                    <FormField
-                      control={form.control}
-                      name="veterinarian"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Medico Curante</FormLabel>
-                          <FormControl>
-                            <Input placeholder="Es. Dr. Mario Rossi" {...field} />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name="notes"
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Note Iniziali</FormLabel>
-                          <FormControl>
-                            <textarea
-                              className="flex min-h-[60px] w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
-                              placeholder="Note cliniche iniziali..."
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </div>
-                </div>
+              <div className="w-[15%]">
+                <Button 
+                  onClick={() => setShowNewPatientForm(true)}
+                  className="w-full h-10 bg-[#22C55E] hover:bg-[#16A34A] text-white"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Nuovo Paziente
+                </Button>
               </div>
             </div>
-          </div>
 
-          <div className="flex justify-end space-x-4 pt-4 border-t">
-            <Button variant="outline" onClick={() => setShowNewPatientForm(false)}>
-              Annulla
-            </Button>
-            <Button onClick={form.handleSubmit(handleNewPatientSubmit)} className="bg-blue-600 hover:bg-blue-700">
-              Crea Paziente e Continua
-            </Button>
+            {/* Patients Cards - Horizontal Scroll */}
+            <div className="flex-1 p-6">
+              <div className="flex gap-4 overflow-x-auto pb-4" style={{ scrollbarWidth: 'thin' }}>
+                {filteredPatients.map((patient) => (
+                  <Card
+                    key={patient.id}
+                    className="min-w-[250px] max-w-[300px] flex-shrink-0 cursor-pointer hover:shadow-lg transition-all duration-200 bg-white border border-slate-200 rounded-lg"
+                    onClick={() => handlePatientSelect(patient)}
+                  >
+                    <CardContent className="p-4">
+                      <div className="flex items-center justify-between mb-3">
+                        <div className="flex items-center">
+                          <span className="text-2xl mr-2">{getSpeciesIcon(patient.species)}</span>
+                          <h3 className="text-lg font-semibold text-slate-800">{patient.name}</h3>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-6 w-6 text-slate-400 hover:text-red-500"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            setShowDeleteConfirm(patient.id);
+                          }}
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+
+                      <div className="flex items-center justify-between mb-2">
+                        <Badge variant="outline" className="text-xs">
+                          {patient.species}
+                        </Badge>
+                        <span className="text-sm text-slate-600">{patient.age} anni</span>
+                      </div>
+
+                      <div className="mb-3">
+                        <p className="font-medium text-slate-700 text-sm">{patient.breed}</p>
+                        <p className="text-xs text-slate-500">Proprietario: {patient.ownerName}</p>
+                      </div>
+
+                      <div className="flex items-center justify-between mb-3 pt-2 border-t border-slate-100">
+                        <div className="flex items-center text-xs text-slate-500">
+                          <Calendar className="w-3 h-3 mr-1" />
+                          {new Date(patient.lastVisit).toLocaleDateString('it-IT')}
+                        </div>
+                        <Badge variant="secondary" className="text-xs">
+                          {patient.veterinarian.replace('Dr. ', '')}
+                        </Badge>
+                      </div>
+
+                      {patient.notes && (
+                        <p className="text-xs text-slate-500 bg-slate-50 p-2 rounded leading-tight line-clamp-2">
+                          {patient.notes}
+                        </p>
+                      )}
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+            </div>
           </div>
         </DialogContent>
       </Dialog>
-    );
-  }
 
-  return (
-    <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-7xl h-[90vh] overflow-hidden">
-        <DialogHeader>
-          <DialogTitle className="text-2xl font-bold text-blue-800">Seleziona o Crea Paziente</DialogTitle>
-        </DialogHeader>
-        
-        <div className="flex flex-col h-full">
-          {/* Filtri e Ricerca */}
-          <div className="flex flex-wrap gap-4 p-4 bg-slate-50 rounded-lg mb-4">
-            <div className="flex-1 min-w-64">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
-                <Input
-                  placeholder="Cerca per nome, proprietario o microchip..."
-                  value={searchTerm}
-                  onChange={(e) => setSearchTerm(e.target.value)}
-                  className="pl-10"
-                />
-              </div>
-            </div>
-            <div className="w-48">
+      {/* New Patient Slide-over */}
+      <Sheet open={showNewPatientForm} onOpenChange={setShowNewPatientForm}>
+        <SheetContent className="w-[400px] sm:max-w-[400px] bg-white">
+          <SheetHeader className="mb-6">
+            <SheetTitle className="text-xl font-semibold text-slate-800">
+              Nuovo Paziente
+            </SheetTitle>
+          </SheetHeader>
+
+          <div className="space-y-4">
+            <div>
+              <Label htmlFor="name" className="text-sm font-medium text-slate-700">
+                Nome paziente *
+              </Label>
               <Input
-                placeholder="Filtra per veterinario"
-                value={veterinarianFilter}
-                onChange={(e) => setVeterinarianFilter(e.target.value)}
+                id="name"
+                value={newPatient.name}
+                onChange={(e) => setNewPatient(prev => ({ ...prev, name: e.target.value }))}
+                className="mt-1"
+                placeholder="Es. Luna"
               />
             </div>
-            <Button
-              onClick={() => setShowNewPatientForm(true)}
-              className="bg-green-600 hover:bg-green-700"
-            >
-              <Plus className="w-4 h-4 mr-2" />
-              Nuovo Paziente
-            </Button>
-          </div>
 
-          {/* Lista Pazienti */}
-          <div className="flex-1 overflow-x-auto">
-            <div className="flex space-x-4 pb-4" style={{ width: 'max-content' }}>
-              {filteredPatients.map((patient) => (
-                <Card
-                  key={patient.id}
-                  className="w-80 cursor-pointer hover:shadow-lg transition-shadow bg-white"
-                  onClick={() => handlePatientSelect(patient)}
-                >
-                  <CardHeader className="pb-3">
-                    <div className="flex items-center justify-between">
-                      <CardTitle className="text-lg flex items-center">
-                        {getSpeciesIcon(patient.species)}
-                        <span className="ml-2">{patient.name}</span>
-                      </CardTitle>
-                      <ChevronRight className="w-5 h-5 text-slate-400" />
-                    </div>
-                  </CardHeader>
-                  <CardContent className="space-y-3">
-                    <div className="flex items-center justify-between">
-                      <Badge variant="outline">{patient.species}</Badge>
-                      <span className="text-sm text-slate-600">{patient.age}</span>
-                    </div>
-                    <div>
-                      <p className="font-medium text-slate-700">{patient.breed}</p>
-                      <p className="text-sm text-slate-500">Proprietario: {patient.ownerName}</p>
-                    </div>
-                    <div className="flex items-center justify-between pt-2 border-t">
-                      <div className="flex items-center text-sm text-slate-500">
-                        <Calendar className="w-4 h-4 mr-1" />
-                        {new Date(patient.lastVisit).toLocaleDateString('it-IT')}
-                      </div>
-                      <Badge variant="secondary" className="text-xs">
-                        {patient.veterinarian}
-                      </Badge>
-                    </div>
-                    {patient.notes && (
-                      <p className="text-xs text-slate-500 bg-slate-50 p-2 rounded">
-                        {patient.notes}
-                      </p>
-                    )}
-                  </CardContent>
-                </Card>
-              ))}
+            <div>
+              <Label htmlFor="species" className="text-sm font-medium text-slate-700">
+                Specie *
+              </Label>
+              <Select 
+                value={newPatient.species} 
+                onValueChange={(value) => setNewPatient(prev => ({ ...prev, species: value }))}
+              >
+                <SelectTrigger className="mt-1">
+                  <SelectValue placeholder="Seleziona specie" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Cane">Cane</SelectItem>
+                  <SelectItem value="Gatto">Gatto</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label htmlFor="breed" className="text-sm font-medium text-slate-700">
+                Razza *
+              </Label>
+              <Input
+                id="breed"
+                value={newPatient.breed}
+                onChange={(e) => setNewPatient(prev => ({ ...prev, breed: e.target.value }))}
+                className="mt-1"
+                placeholder="Es. Labrador"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="age" className="text-sm font-medium text-slate-700">
+                Età (anni) *
+              </Label>
+              <Input
+                id="age"
+                type="number"
+                value={newPatient.age || ''}
+                onChange={(e) => setNewPatient(prev => ({ ...prev, age: parseInt(e.target.value) || 0 }))}
+                className="mt-1"
+                placeholder="3"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="microchip" className="text-sm font-medium text-slate-700">
+                Microchip *
+              </Label>
+              <Input
+                id="microchip"
+                value={newPatient.microchip}
+                onChange={(e) => setNewPatient(prev => ({ ...prev, microchip: e.target.value }))}
+                className="mt-1"
+                placeholder="900108001234567"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="owner" className="text-sm font-medium text-slate-700">
+                Proprietario *
+              </Label>
+              <Input
+                id="owner"
+                value={newPatient.ownerName}
+                onChange={(e) => setNewPatient(prev => ({ ...prev, ownerName: e.target.value }))}
+                className="mt-1"
+                placeholder="Mario Rossi"
+              />
+            </div>
+
+            <div>
+              <Label htmlFor="veterinarian" className="text-sm font-medium text-slate-700">
+                Veterinario assegnato *
+              </Label>
+              <Select 
+                value={newPatient.veterinarian} 
+                onValueChange={(value) => setNewPatient(prev => ({ ...prev, veterinarian: value }))}
+              >
+                <SelectTrigger className="mt-1">
+                  <SelectValue placeholder="Seleziona veterinario" />
+                </SelectTrigger>
+                <SelectContent>
+                  {veterinarians.map(vet => (
+                    <SelectItem key={vet} value={vet}>{vet}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            <div>
+              <Label htmlFor="notes" className="text-sm font-medium text-slate-700">
+                Note
+              </Label>
+              <Textarea
+                id="notes"
+                value={newPatient.notes}
+                onChange={(e) => setNewPatient(prev => ({ ...prev, notes: e.target.value }))}
+                className="mt-1"
+                placeholder="Note cliniche iniziali..."
+                rows={3}
+              />
             </div>
           </div>
 
-          <div className="flex justify-end pt-4 border-t">
-            <Button variant="outline" onClick={onClose}>
+          <div className="flex justify-between pt-6 mt-6 border-t">
+            <Button 
+              variant="ghost" 
+              onClick={() => setShowNewPatientForm(false)}
+              className="text-slate-600"
+            >
               Annulla
             </Button>
+            <Button 
+              onClick={handleSaveNewPatient}
+              className="bg-[#2E5BFF] hover:bg-[#1E40AF] text-white"
+              disabled={!newPatient.name || !newPatient.species || !newPatient.breed || 
+                       !newPatient.age || !newPatient.microchip || !newPatient.ownerName || 
+                       !newPatient.veterinarian}
+            >
+              Salva
+            </Button>
           </div>
-        </div>
-      </DialogContent>
-    </Dialog>
+        </SheetContent>
+      </Sheet>
+
+      {/* Delete Confirmation Dialog */}
+      {showDeleteConfirm && (
+        <Dialog open={!!showDeleteConfirm} onOpenChange={() => setShowDeleteConfirm(null)}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Conferma eliminazione</DialogTitle>
+            </DialogHeader>
+            <p className="text-sm text-slate-600">
+              Sei sicuro di eliminare {patients.find(p => p.id === showDeleteConfirm)?.name}?
+            </p>
+            <div className="flex justify-end space-x-2 mt-4">
+              <Button variant="outline" onClick={() => setShowDeleteConfirm(null)}>
+                Annulla
+              </Button>
+              <Button 
+                variant="destructive" 
+                onClick={() => handleDeletePatient(showDeleteConfirm)}
+              >
+                Elimina
+              </Button>
+            </div>
+          </DialogContent>
+        </Dialog>
+      )}
+    </>
   );
 };
 
