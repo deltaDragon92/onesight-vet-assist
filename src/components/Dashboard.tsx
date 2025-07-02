@@ -13,10 +13,10 @@ const Dashboard = ({ onStartNewVisit }: DashboardProps) => {
   const [showPatientSelection, setShowPatientSelection] = useState(false);
 
   const quickStats = [
-    { title: 'Esami Oggi', value: '12', icon: Camera, color: 'bg-blue-500' },
-    { title: 'Referti Completati', value: '8', icon: FileText, color: 'bg-green-500' },
-    { title: 'Pazienti in Attesa', value: '3', icon: Clock, color: 'bg-orange-500' },
-    { title: 'Accuratezza AI', value: '94%', icon: TrendingUp, color: 'bg-teal-500' }
+    //{ title: 'Esami Oggi', value: '12', icon: Camera, color: 'bg-blue-500' },
+    //{ title: 'Referti Completati', value: '8', icon: FileText, color: 'bg-green-500' },
+    //{ title: 'Pazienti in Attesa', value: '3', icon: Clock, color: 'bg-orange-500' },
+    //{ title: 'Accuratezza AI', value: '94%', icon: TrendingUp, color: 'bg-teal-500' }
   ];
 
   const quickActions = [
