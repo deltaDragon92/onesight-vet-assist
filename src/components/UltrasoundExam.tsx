@@ -321,22 +321,7 @@ const UltrasoundExam = ({ onExamCompleted }: UltrasoundExamProps) => {
             {/* AI Controls */}
            
 
-            <div className="border-t pt-4 space-y-3">
-              <Button variant="outline" className="w-full h-10 text-sm">
-                <Camera className="w-4 h-4 mr-2" />
-                Snapshot
-              </Button>
-              
-              <Button variant="outline" className="w-full h-10 text-sm">
-                <Save className="w-4 h-4 mr-2" />
-                Salva Frame
-              </Button>
-              
-              <Button variant="outline" className="w-full h-10 text-sm">
-                <MapPin className="w-4 h-4 mr-2" />
-                Marca Struttura
-              </Button>
-            </div>
+          
 
             {/* Complete Exam Button */}
             <div className="border-t pt-4">
