@@ -165,7 +165,7 @@ const UltrasoundExam = ({ onExamCompleted }: UltrasoundExamProps) => {
   return (
     <div className="p-6 space-y-6">
       {/* Main Exam Interface */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 h-[40vh] md:h-[50vh] lg:h-[60vh]">  
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">  
         {/* Video Display Area */}
         <Card className="lg:col-span-3 bg-slate-100 shadow-lg">
           <CardContent className="p-0 relative">
