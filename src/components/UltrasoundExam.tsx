@@ -126,33 +126,6 @@ const UltrasoundExam = ({ onExamCompleted }: UltrasoundExamProps) => {
     }
   }, [aiGuidanceMode]);
 
-  // Video time tracking
-  useEffect(() => {
-    if (videoRef.current && aiGuidanceMode) {
-      const video = videoRef.current;
-      const updateTime = () => setVideoTime(video.currentTime);
-      video.addEventListener('timeupdate', updateTime);
-      return () => video.removeEventListener('timeupdate', updateTime);
-    }
-  }, [aiGuidanceMode]);
-
-  // Simulate AI detection
-  useEffect(() => {
-    if (aiGuidanceActive) {
-      const interval = setInterval(() => {
-        const structures = [
-          { id: 1, name: 'Cuore', confidence: 94, x: 45, y: 35, width: 25, height: 20 },
-          { id: 2, name: 'Fegato', confidence: 87, x: 30, y: 55, width: 30, height: 15 },
-          { id: 3, name: 'Vescica', confidence: 91, x: 40, y: 70, width: 20, height: 12 }
-        ];
-        setDetectedStructures(structures);
-      }, 2000);
-      
-      return () => clearInterval(interval);
-    } else {
-      setDetectedStructures([]);
-    }
-  }, [aiGuidanceActive]);
 
   const handleStartAI = () => {
     if (!aiGuidanceActive) {
@@ -194,11 +167,10 @@ const UltrasoundExam = ({ onExamCompleted }: UltrasoundExamProps) => {
 
   return (
     <div className="p-6 space-y-6">
-      {/* Patient Info Bar */}
       {/* Main Exam Interface */}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">  
         {/* Video Display Area */}
-        <Card className="lg:col-span-3 bg-slate-200 shadow-lg">
+        <Card className="lg:col-span-3 bg-slate-100 shadow-lg">
           <CardContent className="p-0 relative">
             <div className="aspect-video bg-gradient-to-br from-slate-100 to-slate-200 relative overflow-hidden flex items-center justify-center">
               {/* Info Panel - Default State */}
