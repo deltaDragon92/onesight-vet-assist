@@ -329,20 +329,7 @@ const UltrasoundExam = ({ onExamCompleted }: UltrasoundExamProps) => {
           </CardHeader>
           <CardContent className="space-y-4">
             {/* AI Controls */}
-            <div className="space-y-3">
-              <Button 
-                onClick={handleStartAI}
-                className={`w-full h-12 text-sm font-medium ${
-                  aiGuidanceActive 
-                    ? 'bg-cyan-500 hover:bg-cyan-600 text-white' 
-                    : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
-                }`}
-              >
-                {aiGuidanceActive ? 'Disattiva AI' : 'Attiva Guida AI'}
-              </Button>
-              
-              
-            </div>
+           
 
             <div className="border-t pt-4 space-y-3">
               <Button variant="outline" className="w-full h-10 text-sm">
