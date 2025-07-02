@@ -213,9 +213,9 @@ const ReportEditor = ({ patientName = "Luna", onReportCompleted, onReportShared 
         </CardContent>
       </Card>
 
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+      <div className={`grid gap-6 transition-all duration-300 ${showPreview ? 'grid-cols-1 xl:grid-cols-3' : 'grid-cols-1'}`}>
         {/* Editor principale */}
-        <div className="xl:col-span-2 space-y-6">
+        <div className={`space-y-6 ${showPreview ? 'xl:col-span-2' : 'col-span-1'}`}>
           {/* Controlli principali */}
           <Card className="bg-white shadow-lg border-0">
             <CardContent className="p-6">
@@ -364,10 +364,10 @@ const ReportEditor = ({ patientName = "Luna", onReportCompleted, onReportShared 
         </div>
 
         {/* Sidebar con Preview */}
-        <div className="space-y-6">
+        <div className={`space-y-6 transition-all duration-300 ease-in-out ${showPreview ? 'block' : 'hidden'}`}>
           {/* Preview Live */}
-          {showPreview && blocks.length > 0 && (
-            <Card className="bg-white shadow-lg border-0">
+          {blocks.length > 0 && (
+            <Card className="bg-white shadow-lg border-0 animate-fade-in">
               <CardHeader className="pb-3">
                 <div className="flex items-center justify-between">
                   <CardTitle className="flex items-center space-x-2">

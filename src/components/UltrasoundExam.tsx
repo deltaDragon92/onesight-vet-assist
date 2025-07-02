@@ -1,9 +1,10 @@
 
 import React, { useState, useEffect, useRef } from 'react';
-import { Play, Square, Save, Camera, MapPin, Volume2, Settings, Maximize, CheckCircle, X, Pause } from 'lucide-react';
+import { Play, Square, Save, Camera, MapPin, Volume2, Settings, Maximize, CheckCircle, X, Pause, Bot } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Canvas, useFrame } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
@@ -68,6 +69,7 @@ const UltrasoundExam = ({ onExamCompleted }: UltrasoundExamProps) => {
   const [isVideoPlaying, setIsVideoPlaying] = useState(true);
   const [videoTime, setVideoTime] = useState(0);
   const [probeData, setProbeData] = useState({ roll: 0, pitch: 0, yaw: 0 });
+  const [selectedScanType, setSelectedScanType] = useState('cuore');
   
   const videoRef = useRef<HTMLVideoElement>(null);
   const wsVideoRef = useRef<WebSocket | null>(null);
@@ -221,74 +223,123 @@ const UltrasoundExam = ({ onExamCompleted }: UltrasoundExamProps) => {
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
         
         {/* Video Display Area */}
-        <Card className="lg:col-span-3 bg-black shadow-lg">
+        <Card className="lg:col-span-3 bg-slate-100 shadow-lg">
           <CardContent className="p-0 relative">
-            <div className="aspect-video bg-gradient-to-br from-slate-800 to-slate-900 relative overflow-hidden">
-              {/* Simulated ultrasound video background */}
-              <div className="absolute inset-0 bg-gradient-radial from-slate-700 via-slate-800 to-slate-900 opacity-80"></div>
-              
-              {/* Simulated ultrasound scan lines */}
-              <div className="absolute inset-0">
-                {[...Array(8)].map((_, i) => (
-                  <div
-                    key={i}
-                    className="absolute bg-gradient-to-r from-transparent via-slate-400 to-transparent opacity-20"
-                    style={{
-                      left: `${10 + i * 10}%`,
-                      top: '20%',
-                      width: '2px',
-                      height: '60%',
-                      transform: `rotate(${-30 + i * 8}deg)`,
-                      transformOrigin: 'bottom'
-                    }}
-                  />
-                ))}
-              </div>
+            <div className="aspect-video bg-gradient-to-br from-slate-100 to-slate-200 relative overflow-hidden flex items-center justify-center">
+              {/* Info Panel - Default State */}
+              {!aiGuidanceMode && (
+                <div className="bg-white rounded-lg shadow-lg p-8 max-w-md mx-4 text-center border">
+                  <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <Bot className="w-8 h-8 text-white" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-slate-800 mb-3">Guida AI non attiva</h3>
+                  
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-sm font-medium text-slate-700 mb-2">Tipo di scansione</label>
+                      <Select value={selectedScanType} onValueChange={setSelectedScanType}>
+                        <SelectTrigger className="w-full">
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent className="bg-white border shadow-lg z-50">
+                          <SelectItem value="cuore">Cuore</SelectItem>
+                          <SelectItem value="addome">Addome</SelectItem>
+                          <SelectItem value="tiroide">Tiroide</SelectItem>
+                          <SelectItem value="fegato">Fegato</SelectItem>
+                          <SelectItem value="reni">Reni</SelectItem>
+                          <SelectItem value="vescica">Vescica</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
 
-              {/* AI Detection Overlays */}
-              {detectedStructures.map((structure) => (
-                <div
-                  key={structure.id}
-                  className="absolute border-2 border-cyan-400 rounded"
-                  style={{
-                    left: `${structure.x}%`,
-                    top: `${structure.y}%`,
-                    width: `${structure.width}%`,
-                    height: `${structure.height}%`
-                  }}
-                >
-                  <div className="absolute -top-6 left-0 bg-cyan-400 text-black px-2 py-1 rounded text-xs font-medium">
-                    {structure.name} ({structure.confidence}%)
+                    <Badge className="bg-green-100 text-green-700 border-green-200">
+                      Pacchetto disponibile
+                    </Badge>
+
+                    <Button 
+                      onClick={() => setAiGuidanceMode(true)}
+                      variant="outline"
+                      className="w-full border-2 border-blue-500 text-blue-600 hover:bg-blue-50 h-12"
+                    >
+                      <Bot className="w-5 h-5 mr-2" />
+                      Avvia Guida AI
+                    </Button>
                   </div>
                 </div>
-              ))}
+              )}
 
-              {/* Video Controls Overlay */}
-              <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  {isRecording && (
-                    <div className="flex items-center space-x-2 bg-red-500 px-3 py-1 rounded-full">
-                      <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-                      <span className="text-white text-sm font-medium">REC</span>
+              {/* Video stream - only in AI guidance mode */}
+              {aiGuidanceMode && (
+                <>
+                  {/* Simulated ultrasound video background */}
+                  <div className="absolute inset-0 bg-gradient-to-br from-slate-800 to-slate-900">
+                    <div className="absolute inset-0 bg-gradient-radial from-slate-700 via-slate-800 to-slate-900 opacity-80"></div>
+                    
+                    {/* Simulated ultrasound scan lines */}
+                    <div className="absolute inset-0">
+                      {[...Array(8)].map((_, i) => (
+                        <div
+                          key={i}
+                          className="absolute bg-gradient-to-r from-transparent via-slate-400 to-transparent opacity-20"
+                          style={{
+                            left: `${10 + i * 10}%`,
+                            top: '20%',
+                            width: '2px',
+                            height: '60%',
+                            transform: `rotate(${-30 + i * 8}deg)`,
+                            transformOrigin: 'bottom'
+                          }}
+                        />
+                      ))}
                     </div>
-                  )}
-                  {aiGuidanceActive && (
-                    <Badge className="bg-cyan-500 text-white">AI Attiva</Badge>
-                  )}
-                </div>
-                
-                <div className="flex items-center space-x-2">
-                  <Button size="sm" variant="secondary" className="bg-white/20 text-white hover:bg-white/30">
-                    <Volume2 className="w-4 h-4" />
-                  </Button>
-                  <Button size="sm" variant="secondary" className="bg-white/20 text-white hover:bg-white/30">
-                    <Settings className="w-4 h-4" />
-                  </Button>
-                  <Button size="sm" variant="secondary" className="bg-white/20 text-white hover:bg-white/30">
-                    <Maximize className="w-4 h-4" />
-                  </Button>
-                </div>
-              </div>
+
+                    {/* AI Detection Overlays */}
+                    {detectedStructures.map((structure) => (
+                      <div
+                        key={structure.id}
+                        className="absolute border-2 border-cyan-400 rounded"
+                        style={{
+                          left: `${structure.x}%`,
+                          top: `${structure.y}%`,
+                          width: `${structure.width}%`,
+                          height: `${structure.height}%`
+                        }}
+                      >
+                        <div className="absolute -top-6 left-0 bg-cyan-400 text-black px-2 py-1 rounded text-xs font-medium">
+                          {structure.name} ({structure.confidence}%)
+                        </div>
+                      </div>
+                    ))}
+
+                    {/* Video Controls Overlay */}
+                    <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between">
+                      <div className="flex items-center space-x-2">
+                        {isRecording && (
+                          <div className="flex items-center space-x-2 bg-red-500 px-3 py-1 rounded-full">
+                            <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                            <span className="text-white text-sm font-medium">REC</span>
+                          </div>
+                        )}
+                        {aiGuidanceActive && (
+                          <Badge className="bg-cyan-500 text-white">AI Attiva</Badge>
+                        )}
+                      </div>
+                      
+                      <div className="flex items-center space-x-2">
+                        <Button size="sm" variant="secondary" className="bg-white/20 text-white hover:bg-white/30">
+                          <Volume2 className="w-4 h-4" />
+                        </Button>
+                        <Button size="sm" variant="secondary" className="bg-white/20 text-white hover:bg-white/30">
+                          <Settings className="w-4 h-4" />
+                        </Button>
+                        <Button size="sm" variant="secondary" className="bg-white/20 text-white hover:bg-white/30">
+                          <Maximize className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
             </div>
           </CardContent>
         </Card>
