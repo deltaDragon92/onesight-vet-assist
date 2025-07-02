@@ -174,7 +174,7 @@ const PatientSelection = ({ isOpen, onClose, onPatientSelected }: PatientSelecti
             </DialogHeader>
 
             {/* Search and Filters Row */}
-            <div className="flex gap-4 p-6 bg-white border-b">
+            <div className="sticky top-0 z-10 flex gap-4 p-6 bg-white border-b">
               <div className="w-[60%] relative">
                 <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-slate-400 w-4 h-4" />
                 <Input
@@ -184,7 +184,7 @@ const PatientSelection = ({ isOpen, onClose, onPatientSelected }: PatientSelecti
                   className="pl-10 h-10"
                 />
               </div>
-              <div className="w-[25%]">
+              <div className="flex-none w-36">
                 <Select value={veterinarianFilter} onValueChange={setVeterinarianFilter}>
                   <SelectTrigger className="h-10">
                     <SelectValue placeholder="Filtra per veterinario" />
@@ -198,9 +198,10 @@ const PatientSelection = ({ isOpen, onClose, onPatientSelected }: PatientSelecti
                 </Select>
               </div>
               <div className="w-[15%]">
-                <Button 
+                <div className="flex-none">
+                <Button
                   onClick={() => setShowNewPatientForm(true)}
-                  className="w-full h-10 bg-[#22C55E] hover:bg-[#16A34A] text-white"
+                  className="min-w-[120px] h-10 bg-[#22C55E] hover:bg-[#16A34A] text-white"
                 >
                   <Plus className="w-4 h-4 mr-2" />
                   Nuovo Paziente
