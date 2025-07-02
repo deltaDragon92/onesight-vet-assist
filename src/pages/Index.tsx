@@ -25,51 +25,14 @@ const Index = () => {
   const [showTerminateDialog, setShowTerminateDialog] = useState(false);
   
   // Step progression state
-  const [stepProgression, setStepProgression] = useState({
-    dashboard: { completed: false, unlocked: true },
-    digitaltwin: { completed: false, unlocked: false },
-    exam: { completed: false, unlocked: false },
-    reports: { completed: false, unlocked: false },
-    petowner: { completed: false, unlocked: false }
-  });
+
 
   // Visit state
   const [visitInProgress, setVisitInProgress] = useState(false);
   const [reportShared, setReportShared] = useState(false);
   const [currentPatient, setCurrentPatient] = useState<string | null>(null);
 
-  const steps = [
-    {
-      id: 'dashboard',
-      label: 'Dashboard',
-      icon: <div className="w-5 h-5 bg-blue-500 rounded"></div>,
-      description: 'Riepilogo e avvio visita'
-    },
-    {
-      id: 'digitaltwin',
-      label: 'Cartella clinica',
-      icon: <div className="w-5 h-5 bg-gradient-to-r from-cyan-500 to-teal-500 rounded-full"></div>,
-      description: 'Scheda paziente e storico'
-    },
-    {
-      id: 'exam',
-      label: 'Esame Live',
-      icon: <Camera className="w-5 h-5" />,
-      description: 'Ecografia in tempo reale'
-    },
-    {
-      id: 'reports',
-      label: 'Referto',
-      icon: <FileText className="w-5 h-5" />,
-      description: 'Refertazione assistita'
-    },
-    {
-      id: 'petowner',
-      label: 'Anteprima referto',
-      icon: <Clock className="w-5 h-5" />,
-      description: 'Vista per proprietari'
-    }
-  ];
+  
 
   const handleSidebarNavigate = (section: string) => {
     setSidebarSection(section);
