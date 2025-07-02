@@ -211,7 +211,7 @@ const PatientSelection = ({ isOpen, onClose, onPatientSelected }: PatientSelecti
             {/* Patients Cards - Horizontal Scroll */}
             <div className="flex-1 flex flex-col px-6 py-6">
              <div 
-               className="flex gap-4 overflow-x-auto pb-4 pr-6" 
+               className="flex gap-4 pb-4 pr-6" 
                style={{ scrollbarWidth: 'thin' }}
                  >
                 {filteredPatients.map((patient) => (
