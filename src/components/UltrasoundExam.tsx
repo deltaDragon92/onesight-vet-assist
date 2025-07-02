@@ -291,17 +291,7 @@ const UltrasoundExam = ({ onExamCompleted }: UltrasoundExamProps) => {
 
                     {/* Video Controls Overlay */}
                     <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between">
-                      <div className="flex items-center space-x-2">
-                        {isRecording && (
-                          <div className="flex items-center space-x-2 bg-red-500 px-3 py-1 rounded-full">
-                            <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-                            <span className="text-white text-sm font-medium">REC</span>
-                          </div>
-                        )}
-                        {aiGuidanceActive && (
-                          <Badge className="bg-cyan-500 text-white">AI Attiva</Badge>
-                        )}
-                      </div>
+                      
                       
                       <div className="flex items-center space-x-2">
                         <Button size="sm" variant="secondary" className="bg-white/20 text-white hover:bg-white/30">
