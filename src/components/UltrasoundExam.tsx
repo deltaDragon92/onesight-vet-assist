@@ -61,7 +61,7 @@ const ProbeAxes = ({ probeData }: { probeData: { roll: number; pitch: number; ya
 };
 
 const UltrasoundExam = ({ onExamCompleted }: UltrasoundExamProps) => {
-  const [isRecording, setIsRecording] = useState(false);
+
   const [aiGuidanceActive, setAiGuidanceActive] = useState(false);
   const [detectedStructures, setDetectedStructures] = useState([]);
   const [examCompleted, setExamCompleted] = useState(false);
