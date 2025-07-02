@@ -38,7 +38,7 @@ const Dashboard = ({ onStartNewVisit }: DashboardProps) => {
     <div className="p-6 space-y-6">
 
       {/* Quick Actions + Recent Activity */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-4 md:h-70">
         {quickActions.map((action, index) => (
           <Card
             key={index}
@@ -64,7 +64,7 @@ const Dashboard = ({ onStartNewVisit }: DashboardProps) => {
         ))}
 
         {/* Recent Activity Card spans 3 columns */}
-        <Card className="bg-white shadow-sm md:col-span-3 lg:col-span-3 md:h-80">
+        <Card className="bg-white shadow-sm md:col-span-3 lg:col-span-3 md:h-70">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <Activity className="w-5 h-5 text-blue-600" />
