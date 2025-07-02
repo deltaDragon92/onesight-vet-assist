@@ -65,7 +65,7 @@ const Index = () => {
     },
     {
       id: 'petowner',
-      label: 'Pet Owner',
+      label: 'Anteprima referto',
       icon: <Clock className="w-5 h-5" />,
       description: 'Vista per proprietari'
     }
