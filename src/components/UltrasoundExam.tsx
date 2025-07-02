@@ -170,6 +170,22 @@ const UltrasoundExam = ({ onExamCompleted }: UltrasoundExamProps) => {
         <Card className="lg:col-span-3 bg-slate-100 shadow-lg">
           <CardContent className="p-0 relative">
              <div className="absolute top-4 right-4 flex items-center space-x-2 z-10">
+              <Button size="sm" variant="secondary" className="bg-white/80 hover:bg-white">
+                <Play className="w-4 h-4" />
+              </Button>
+              <Button size="sm" variant="secondary" className="bg-white/80 hover:bg-white">
+                <Pause className="w-4 h-4" />
+              </Button>
+              <Button size="sm" variant="secondary" className="bg-white/80 hover:bg-white">
+                <Save className="w-4 h-4" />
+              </Button>
+              <Button size="sm" variant="secondary" className="bg-white/80 hover:bg-white">
+                <Camera className="w-4 h-4" />
+              </Button>
+              <Button size="sm" variant="secondary" className="bg-white/80 hover:bg-white">
+                <MapPin className="w-4 h-4" />
+              </Button>
+            </div>
             <div className="aspect-video bg-gradient-to-br from-slate-100 to-slate-200 relative overflow-hidden flex items-center justify-center">
               {/* Info Panel - Default State */}
               {!aiGuidanceMode && (
