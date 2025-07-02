@@ -27,20 +27,6 @@ const Dashboard = ({ onStartNewVisit }: DashboardProps) => {
       color: 'from-blue-500 to-blue-600',
       action: 'exam'
     },
-    {
-      title: 'Gestione Referti',
-      description: 'Visualizza e modifica i referti',
-      icon: FileText,
-      color: 'from-green-500 to-green-600',
-      action: 'reports'
-    },
-    {
-      title: 'Storico Pazienti',
-      description: 'Cerca e visualizza pazienti',
-      icon: Users,
-      color: 'from-teal-500 to-teal-600',
-      action: 'patients'
-    }
   ];
 
   const recentActivity = [
