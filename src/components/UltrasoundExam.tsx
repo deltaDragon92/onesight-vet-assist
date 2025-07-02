@@ -165,10 +165,11 @@ const UltrasoundExam = ({ onExamCompleted }: UltrasoundExamProps) => {
   return (
     <div className="p-6 space-y-6">
       {/* Main Exam Interface */}
-      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">  
+      <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 h-[40vh] md:h-[50vh] lg:h-[60vh]">  
         {/* Video Display Area */}
-        <Card className="lg:col-span-3 bg-slate-150 shadow-lg">
+        <Card className="lg:col-span-3 bg-slate-100 shadow-lg">
           <CardContent className="p-0 relative">
+             <div className="absolute top-4 right-4 flex items-center space-x-2 z-10">
             <div className="aspect-video bg-gradient-to-br from-slate-100 to-slate-200 relative overflow-hidden flex items-center justify-center">
               {/* Info Panel - Default State */}
               {!aiGuidanceMode && (
