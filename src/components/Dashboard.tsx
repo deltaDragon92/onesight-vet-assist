@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Camera, Activity } from 'lucide-react';
+import { Camera, Activity, Play } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import PatientSelection from './PatientSelection';
@@ -17,20 +17,20 @@ const Dashboard = ({ onStartNewVisit }: DashboardProps) => {
       description: 'Inizia un nuovo esame con guida AI',
       icon: Camera,
       color: 'from-blue-500 to-blue-600',
-      action: 'exam',
-    },
+      action: 'exam'
+    }
   ];
 
   const recentActivity = [
     { patient: 'Luna (Labrador)', type: 'Ecocardiografia', time: '10:30', status: 'completed' },
     { patient: 'Micio (Gatto Europeo)', type: 'Eco Addominale', time: '11:15', status: 'in-progress' },
-    { patient: 'Rocky (Pastore Tedesco)', type: 'Eco Toracica', time: '12:00', status: 'scheduled' },
+    { patient: 'Rocky (Pastore Tedesco)', type: 'Eco Toracica', time: '12:00', status: 'scheduled' }
   ];
 
   const upcomingAppointments = [
     { patient: 'Bella (Bulldog)', date: '2025-07-03', time: '09:00' },
     { patient: 'Leo (Gatto Ragdoll)', date: '2025-07-03', time: '11:00' },
-    { patient: 'Max (Beagle)', date: '2025-07-03', time: '14:00' },
+    { patient: 'Max (Beagle)', date: '2025-07-03', time: '14:00' }
   ];
 
   const handleStartNewVisit = () => setShowPatientSelection(true);
@@ -42,8 +42,9 @@ const Dashboard = ({ onStartNewVisit }: DashboardProps) => {
 
   return (
     <div className="p-6 space-y-6">
+
       {/* Quick Actions + Recent Activity */}
-      <div className="flex flex-wrap gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-4">
         {quickActions.map((action, index) => (
           <Card
             key={index}
@@ -68,15 +69,16 @@ const Dashboard = ({ onStartNewVisit }: DashboardProps) => {
           </Card>
         ))}
 
-        <Card className="bg-white shadow-sm flex-1 min-w-[300px]">
+        {/* Recent Activity Card spans 3 columns */}
+        <Card className="bg-white shadow-sm md:col-span-3 lg:col-span-3 md:h-70">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <Activity className="w-5 h-5 text-blue-600" />
               <span>Attività Recente</span>
             </CardTitle>
           </CardHeader>
-          <CardContent className="overflow-y-auto h-60">
-            <div className="space-y-3">
+          <CardContent className="overflow-y-auto h-full">
+            <div className="space-y-3 md:space-y-2">
               {recentActivity.map((activity, idx) => (
                 <div
                   key={idx}
@@ -124,21 +126,23 @@ const Dashboard = ({ onStartNewVisit }: DashboardProps) => {
         </Card>
       </div>
 
-      {/* Upcoming Appointments Horizontal Timeline */}
-      <Card className="bg-white shadow-sm">
+      {/* Upcoming Appointments Timeline full width */}
+      <Card className="bg-white shadow-sm md:col-span-4 lg:col-span-4">
         <CardHeader>
           <CardTitle>Prossimi Appuntamenti</CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex overflow-x-auto space-x-6 py-4">
+          <div className="relative timeline">
             {upcomingAppointments.map((appt, idx) => (
-              <div
-                key={idx}
-                className="flex-none w-48 p-4 bg-slate-50 rounded-lg text-center"
-              >
-                <p className="text-sm font-medium text-slate-800">{appt.patient}</p>
-                <p className="text-xs text-slate-500">{appt.date}</p>
-                <p className="text-xs text-slate-500">{appt.time}</p>
+              <div key={idx} className="flex items-start mb-6">
+                <div className="flex flex-col items-center mr-4">
+                  <div className="w-3 h-3 bg-blue-600 rounded-full mt-1"></div>
+                  {idx < upcomingAppointments.length - 1 && <div className="w-px h-full bg-blue-200"></div>}
+                </div>
+                <div>
+                  <p className="text-sm font-medium text-slate-800">{appt.patient}</p>
+                  <p className="text-xs text-slate-500">{appt.date} - {appt.time}</p>
+                </div>
               </div>
             ))}
           </div>
