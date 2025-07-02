@@ -59,12 +59,12 @@ const Index = () => {
     },
     {
       id: 'reports',
-      label: 'Referto',
+      label: 'Referti',
       icon: <FileText className="w-5 h-5" />,
       description: 'Refertazione assistita'
     },
     {
-      id: 'reportpreview',
+      id: 'petowner',
       label: 'Anteprima referto',
       icon: <Clock className="w-5 h-5" />,
       description: 'Vista per proprietari'
@@ -88,7 +88,7 @@ const Index = () => {
       newProgression[stepId].completed = true;
 
       // Unlock next step
-      const stepOrder = ['dashboard', 'digitaltwin', 'exam', 'reports', 'reportpreview'];
+      const stepOrder = ['dashboard', 'digitaltwin', 'exam', 'reports', 'petowner'];
       const currentIndex = stepOrder.indexOf(stepId);
       if (currentIndex < stepOrder.length - 1) {
         const nextStep = stepOrder[currentIndex + 1];
@@ -147,7 +147,7 @@ const Index = () => {
 
   const handleReportCompleted = () => {
     completeStep('reports');
-    setActiveTab('reportpreview');
+    setActiveTab('petowner');
   };
 
   const handleReportShared = () => {
