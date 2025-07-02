@@ -321,14 +321,14 @@ const UltrasoundExam = ({ onExamCompleted }: UltrasoundExamProps) => {
               className="text-red-600 border-red-200 hover:bg-red-50"
             >
               <X className="w-4 h-4 mr-2" />
-              Esci Guida AI
+              Esci da Guida AI
             </Button>
           </div>
 
           {/* Main Content */}
           <div className="flex-1 p-6 flex flex-col md:flex-row gap-4 overflow-hidden">
             {/* Video Panel */}
-            <div className="flex-[2] min-w-0 h-[60vh] md:h-auto">
+            <div className="flex-[2] min-w-0 h-[90vh] md:h-auto">
               <Card className="h-full bg-[#0F1013] border-slate-700 shadow-lg">
                 <CardContent className="p-0 h-full relative">
                   <video
