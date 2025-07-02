@@ -247,70 +247,7 @@ const UltrasoundExam = ({ onExamCompleted }: UltrasoundExamProps) => {
               )}
 
               {/* Video stream - only in AI guidance mode */}
-              {aiGuidanceMode && (
-                <>
-                  {/* Simulated ultrasound video background */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-slate-800 to-slate-900">
-                    <div className="absolute inset-0 bg-gradient-radial from-slate-700 via-slate-800 to-slate-900 opacity-80"></div>
-                    
-                    {/* Simulated ultrasound scan lines */}
-                    <div className="absolute inset-0">
-                      {[...Array(8)].map((_, i) => (
-                        <div
-                          key={i}
-                          className="absolute bg-gradient-to-r from-transparent via-slate-400 to-transparent opacity-20"
-                          style={{
-                            left: `${10 + i * 10}%`,
-                            top: '20%',
-                            width: '2px',
-                            height: '60%',
-                            transform: `rotate(${-30 + i * 8}deg)`,
-                            transformOrigin: 'bottom'
-                          }}
-                        />
-                      ))}
-                    </div>
-
-                    {/* AI Detection Overlays */}
-                    {detectedStructures.map((structure) => (
-                      <div
-                        key={structure.id}
-                        className="absolute border-2 border-cyan-400 rounded"
-                        style={{
-                          left: `${structure.x}%`,
-                          top: `${structure.y}%`,
-                          width: `${structure.width}%`,
-                          height: `${structure.height}%`
-                        }}
-                      >
-                        <div className="absolute -top-6 left-0 bg-cyan-400 text-black px-2 py-1 rounded text-xs font-medium">
-                          {structure.name} ({structure.confidence}%)
-                        </div>
-                      </div>
-                    ))}
-
-                    {/* Video Controls Overlay */}
-                    <div className="absolute bottom-4 left-4 right-4 flex items-center justify-between">
-                      
-                      
-                      <div className="flex items-center space-x-2">
-                        <Button size="sm" variant="secondary" className="bg-white/20 text-white hover:bg-white/30">
-                          <Volume2 className="w-4 h-4" />
-                        </Button>
-                        <Button size="sm" variant="secondary" className="bg-white/20 text-white hover:bg-white/30">
-                          <Settings className="w-4 h-4" />
-                        </Button>
-                        <Button size="sm" variant="secondary" className="bg-white/20 text-white hover:bg-white/30">
-                          <Maximize className="w-4 h-4" />
-                        </Button>
-                      </div>
-                    </div>
-                  </div>
-                </>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+              
 
         {/* Control Panel */}
         <Card className="bg-white shadow-sm">
