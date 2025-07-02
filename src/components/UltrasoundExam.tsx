@@ -166,9 +166,18 @@ const UltrasoundExam = ({ onExamCompleted }: UltrasoundExamProps) => {
       {/* Main Exam Interface */}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">  
         {/* Video Display Area */}
-        <Card className="lg:col-span-4 bg-slate-100 shadow-lg">
+        <Card className="lg:col-span-3 bg-slate-100 shadow-lg">
           <CardContent className="p-0 relative">
-            <div className="aspect-video bg-gradient-to-br from-slate-100 to-slate-200 relative overflow-hidden flex items-center justify-center">
+           <div className="
+              w-full
+              h-[40vh]      /* 40% viewport height su schermi piccoli */
+              md:h-[50vh]   /* 50% su tablet e up */
+              lg:h-[60vh]   /* 60% su desktop large */
+              max-h-screen  /* mai più alta del device */
+              bg-gradient-to-br from-slate-100 to-slate-200
+              relative overflow-hidden flex items-center justify-center
+            "
+          >
               {/* Info Panel - Default State */}
               {!aiGuidanceMode && (
                 <div className="bg-white rounded-lg shadow-lg p-8 max-w-md mx-4 text-center border">
