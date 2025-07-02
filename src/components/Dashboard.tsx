@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Camera, FileText, BookOpen, Clock, Activity, Users, TrendingUp, AlertCircle, Play } from 'lucide-react';
+import { Camera, Activity } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import PatientSelection from './PatientSelection';
@@ -17,14 +17,20 @@ const Dashboard = ({ onStartNewVisit }: DashboardProps) => {
       description: 'Inizia un nuovo esame con guida AI',
       icon: Camera,
       color: 'from-blue-500 to-blue-600',
-      action: 'exam'
-    }
+      action: 'exam',
+    },
   ];
 
   const recentActivity = [
     { patient: 'Luna (Labrador)', type: 'Ecocardiografia', time: '10:30', status: 'completed' },
     { patient: 'Micio (Gatto Europeo)', type: 'Eco Addominale', time: '11:15', status: 'in-progress' },
-    { patient: 'Rocky (Pastore Tedesco)', type: 'Eco Toracica', time: '12:00', status: 'scheduled' }
+    { patient: 'Rocky (Pastore Tedesco)', type: 'Eco Toracica', time: '12:00', status: 'scheduled' },
+  ];
+
+  const upcomingAppointments = [
+    { patient: 'Bella (Bulldog)', date: '2025-07-03', time: '09:00' },
+    { patient: 'Leo (Gatto Ragdoll)', date: '2025-07-03', time: '11:00' },
+    { patient: 'Max (Beagle)', date: '2025-07-03', time: '14:00' },
   ];
 
   const handleStartNewVisit = () => setShowPatientSelection(true);
@@ -36,7 +42,6 @@ const Dashboard = ({ onStartNewVisit }: DashboardProps) => {
 
   return (
     <div className="p-6 space-y-6">
-
       {/* Quick Actions + Recent Activity */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-4 md:h-70">
         {quickActions.map((action, index) => (
@@ -63,7 +68,6 @@ const Dashboard = ({ onStartNewVisit }: DashboardProps) => {
           </Card>
         ))}
 
-        {/* Recent Activity Card spans 3 columns */}
         <Card className="bg-white shadow-sm md:col-span-3 lg:col-span-3 md:h-70">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
