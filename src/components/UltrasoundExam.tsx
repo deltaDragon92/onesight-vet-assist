@@ -341,23 +341,7 @@ const UltrasoundExam = ({ onExamCompleted }: UltrasoundExamProps) => {
                 {aiGuidanceActive ? 'Disattiva AI' : 'Attiva Guida AI'}
               </Button>
               
-              <Button 
-                onClick={handleRecord}
-                variant={isRecording ? "destructive" : "outline"}
-                className="w-full h-12 text-sm font-medium"
-              >
-                {isRecording ? (
-                  <>
-                    <Square className="w-4 h-4 mr-2" />
-                    Stop Registrazione
-                  </>
-                ) : (
-                  <>
-                    <Play className="w-4 h-4 mr-2" />
-                    Inizia Registrazione
-                  </>
-                )}
-              </Button>
+              
             </div>
 
             <div className="border-t pt-4 space-y-3">
@@ -396,7 +380,41 @@ const UltrasoundExam = ({ onExamCompleted }: UltrasoundExamProps) => {
       </div>
 
       {/* AI Guidance Panel */}
-      
+      {aiGuidanceActive && (
+        <Card className="bg-gradient-to-r from-cyan-50 to-blue-50 border-cyan-200 shadow-sm">
+          <CardHeader>
+            <CardTitle className="text-lg text-cyan-800 flex items-center">
+              <div className="w-2 h-2 bg-cyan-500 rounded-full mr-2 animate-pulse"></div>
+              Guida AI Attiva
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <h4 className="font-medium text-slate-800 mb-2">Strutture Rilevate</h4>
+                <div className="space-y-2">
+                  {detectedStructures.map((structure) => (
+                    <div key={structure.id} className="flex items-center justify-between bg-white p-2 rounded">
+                      <span className="text-sm text-slate-700">{structure.name}</span>
+                      <Badge variant="secondary" className="text-xs">
+                        {structure.confidence}%
+                      </Badge>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <h4 className="font-medium text-slate-800 mb-2">Suggerimenti</h4>
+                <div className="space-y-2 text-sm text-slate-600">
+                  <p>• Aumenta la profondità per una migliore visualizzazione</p>
+                  <p>• Posiziona la sonda più in basso per il fegato</p>
+                  <p>• Ottima visualizzazione cardiaca</p>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      )}
 
       {/* AI Guidance Mode Full-Screen Overlay */}
       {aiGuidanceMode && (
