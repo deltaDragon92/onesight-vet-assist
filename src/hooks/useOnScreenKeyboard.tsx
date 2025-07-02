@@ -66,17 +66,11 @@ export const useOnScreenKeyboard = ({
     }
   }, [activeInput, onKeyPress, hideKeyboard]);
 
-  // Auto-activation on focus
   useEffect(() => {
     const handleFocus = (event: FocusEvent) => {
       const target = event.target as HTMLElement;
       if (target.tagName === 'INPUT' || target.tagName === 'TEXTAREA') {
         const inputElement = target as HTMLInputElement | HTMLTextAreaElement;
-        // Skip if it's a button or other non-text input
-        if (target.tagName === 'INPUT' && (target as HTMLInputElement).type && 
-            !['text', 'email', 'password', 'search', 'tel', 'url'].includes((target as HTMLInputElement).type)) {
-          return;
-        }
         showKeyboard(inputElement);
       }
     };
