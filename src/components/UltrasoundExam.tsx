@@ -170,7 +170,7 @@ const UltrasoundExam = ({ onExamCompleted }: UltrasoundExamProps) => {
           <CardContent className="p-0 relative">
            <div className="
               w-full
-              h-[40vh]      /* 40% viewport height su schermi piccoli */
+              h-[50vh]      /* 40% viewport height su schermi piccoli */
               md:h-[50vh]   /* 50% su tablet e up */
               lg:h-[60vh]   /* 60% su desktop large */
               max-h-screen  /* mai più alta del device */
