@@ -238,8 +238,6 @@ const Index = () => {
       </header>
 
       {/* Step Navigation */}
-      <div className="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
             <TabsList className="grid w-full grid-cols-5 bg-slate-50 dark:bg-slate-700 p-1 h-16">
               {steps.map((step, index) => {
@@ -332,7 +330,7 @@ const Index = () => {
             </TabsContent>
           </Tabs>
         </div>
-      </div>
+
 
       {/* Terminate Visit Confirmation Dialog */}
       <Dialog open={showTerminateDialog} onOpenChange={setShowTerminateDialog}>
@@ -363,7 +361,7 @@ const Index = () => {
           </DialogFooter>
         </DialogContent>
       </Dialog>
-    </div>
+
   );
 };
 
