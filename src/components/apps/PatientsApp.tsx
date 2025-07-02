@@ -1,6 +1,6 @@
 
 import React, { useState } from 'react';
-import { Search, Plus, User, Chip } from 'lucide-react';
+import { Search, Plus, User, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
@@ -82,7 +82,7 @@ const PatientsApp = ({ onPatientSelected }: PatientsAppProps) => {
                   </div>
                   <p className="text-sm text-slate-600 mb-1">Proprietario: {patient.owner}</p>
                   <div className="flex items-center text-xs text-slate-500">
-                    <Chip className="w-3 h-3 mr-1" />
+                    <Zap className="w-3 h-3 mr-1" />
                     <span className="font-mono">{patient.chip}</span>
                     <span className="mx-2">•</span>
                     <span>{patient.age}</span>

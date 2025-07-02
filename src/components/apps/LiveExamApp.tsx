@@ -1,6 +1,6 @@
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Play, Pause, X, Bot, Volume2, Settings, Maximize } from 'lucide-react';
+import { Play, Pause, X, Bot, Volume2, Settings, Maximize, Camera } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
