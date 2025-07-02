@@ -64,7 +64,7 @@ const UltrasoundExam = ({ onExamCompleted }: UltrasoundExamProps) => {
 
   const [aiGuidanceActive, setAiGuidanceActive] = useState(false);
   const [detectedStructures, setDetectedStructures] = useState([]);
-  const [examCompleted, setExamCompleted] = useState(false);
+  const [examCompleted, setExamCompleted] = useState(true);
   const [aiGuidanceMode, setAiGuidanceMode] = useState(false);
   const [isVideoPlaying, setIsVideoPlaying] = useState(true);
   const [videoTime, setVideoTime] = useState(0);
@@ -137,10 +137,6 @@ const UltrasoundExam = ({ onExamCompleted }: UltrasoundExamProps) => {
   const handleExitAIGuidance = () => {
     setAiGuidanceMode(false);
     setAiGuidanceActive(false);
-  };
-
-  const handleRecord = () => {
-    setIsRecording(!isRecording);
   };
 
   const handleCompleteExam = () => {
