@@ -198,10 +198,9 @@ const PatientSelection = ({ isOpen, onClose, onPatientSelected }: PatientSelecti
                 </Select>
               </div>
               <div className="w-[15%]">
-                <div className="flex-none">
-              <Button
-                onClick={() => setShowNewPatientForm(true)}
-                className="min-w-[120px] h-10 bg-[#22C55E] hover:bg-[#16A34A] text-white"
+                <Button 
+                  onClick={() => setShowNewPatientForm(true)}
+                  className="w-full h-10 bg-[#22C55E] hover:bg-[#16A34A] text-white"
                 >
                   <Plus className="w-4 h-4 mr-2" />
                   Nuovo Paziente
