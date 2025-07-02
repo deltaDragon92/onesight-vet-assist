@@ -1,3 +1,4 @@
+
 import React, { useState, useRef } from 'react';
 import { FileText, Plus, Eye, Share2, CheckCircle, Bot, Search, Clock, Camera, Video, Palette, Layout, Upload, MessageSquare, Sparkles, BookOpen, Copy, Mic } from 'lucide-react';
 import ReportBlock from './ReportBlock';
@@ -13,8 +14,6 @@ import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import MedicalDictionary from './MedicalDictionary';
-import OnScreenKeyboard from './OnScreenKeyboard';
-import { useOnScreenKeyboard } from '@/hooks/useOnScreenKeyboard';
 
 interface ReportBlock {
   id: string;
@@ -48,24 +47,11 @@ const ReportEditor = ({ patientName = "Luna", onReportCompleted, onReportShared 
   const [mediaAttachments, setMediaAttachments] = useState<any[]>([]);
   const [searchTerm, setSearchTerm] = useState('');
   const [showDictionary, setShowDictionary] = useState(false);
-
-  // On-Screen Keyboard hook
-  const { isVisible, hideKeyboard, handleKeyPress, register, keyboardRef  } = useOnScreenKeyboard({
-    onKeyPress: (key, inputRef) => {
-      console.log('Key pressed:', key, 'on', inputRef?.name);
-      if (inputRef && inputRef.current) {
-        const el = inputRef.current;
-        if (key === 'BACKSPACE') {
-          el.value = el.value.slice(0, -1);
-        } else if (key === 'ENTER') {
-          el.value += '\n';
-        } else {
-          el.value += key;
-        }
-        el.dispatchEvent(new Event('input', { bubbles: true }));
-      }
-    },
-    dismissOnOutsideClick: true
+  const [formData, setFormData] = useState({
+    name: '',
+    email: '',
+    message: '',
+    notes: ''
   });
 
   // Refs for input fields
@@ -109,7 +95,9 @@ const ReportEditor = ({ patientName = "Luna", onReportCompleted, onReportShared 
     setBlocks(prev => [...prev, newBlock]);
   };
 
-  // ... rest of handlers unchanged ...
+  const handleInputChange = (field: keyof typeof formData) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    setFormData(prev => ({ ...prev, [field]: e.target.value }));
+  };
 
   return (
     <div className="p-4 space-y-4 max-w-full overflow-hidden bg-gradient-to-br from-slate-50 to-blue-50 min-h-screen">
@@ -135,72 +123,95 @@ const ReportEditor = ({ patientName = "Luna", onReportCompleted, onReportShared 
                   placeholder="Cerca nel referto..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  onFocus={() => register(someRef)}
                   className="pl-10 w-64"
                 />
               </div>
-              {/* ... other badges ... */}
+              <Badge variant="secondary" className="bg-blue-100 text-blue-700">
+                <Clock className="w-3 h-3 mr-1" />
+                {completionPercentage}% completato
+              </Badge>
             </div>
-          </CardContent>
-        </Card>
+          </div>
+        </CardContent>
       </Card>
 
-      {/* Main Editor and Inputs */}
-      {/* Example for personal info inputs: */}
-      <Input
-        ref={nameRef}
-        id="name"
-        name="name"
-        value={/* formData.name */ ''}
-        onChange={/* handleInputChange('name') */ () => {}}
-        placeholder="Es. Mario Rossi"
-        onFocus={() => register(someRef)}
-        className="mt-1"
-      />
+      {/* Form inputs section */}
+      <Card className="bg-white shadow-lg border-0">
+        <CardHeader>
+          <CardTitle>Informazioni Paziente</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div>
+            <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+              Nome Completo
+            </label>
+            <Input
+              ref={nameRef}
+              id="name"
+              name="name"
+              value={formData.name}
+              onChange={handleInputChange('name')}
+              placeholder="Es. Mario Rossi"
+              className="mt-1"
+            />
+          </div>
 
-      <Input
-        ref={emailRef}
-        id="email"
-        name="email"
-        type="email"
-        value={/* formData.email */ ''}
-        onChange={/* handleInputChange('email') */ () => {}}
-        placeholder="mario.rossi@example.com"
-        onFocus={() => register(someRef)}
-        className="mt-1"
-      />
+          <div>
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+              Email
+            </label>
+            <Input
+              ref={emailRef}
+              id="email"
+              name="email"
+              type="email"
+              value={formData.email}
+              onChange={handleInputChange('email')}
+              placeholder="mario.rossi@example.com"
+              className="mt-1"
+            />
+          </div>
 
-      <Textarea
-        ref={messageRef}
-        id="message"
-        name="message"
-        rows={4}
-        value={/* formData.message */ ''}
-        onChange={/* handleInputChange('message') */ () => {}}
-        placeholder="Scrivi il tuo messaggio qui..."
-        onFocus={() => register(someRef)}
-        className="mt-1"
-      />
+          <div>
+            <label htmlFor="message" className="block text-sm font-medium text-gray-700 mb-1">
+              Messaggio
+            </label>
+            <Textarea
+              ref={messageRef}
+              id="message"
+              name="message"
+              rows={4}
+              value={formData.message}
+              onChange={handleInputChange('message')}
+              placeholder="Scrivi il tuo messaggio qui..."
+              className="mt-1"
+            />
+          </div>
 
-      <Input
-        ref={notesRef}
-        id="notes"
-        name="notes"
-        value={/* formData.notes */ ''}
-        onChange={/* handleInputChange('notes') */ () => {}}
-        placeholder="Note brevi..."
-        onFocus={() => register(someRef)}
-        className="mt-1"
-      />
+          <div>
+            <label htmlFor="notes" className="block text-sm font-medium text-gray-700 mb-1">
+              Note
+            </label>
+            <Input
+              ref={notesRef}
+              id="notes"
+              name="notes"
+              value={formData.notes}
+              onChange={handleInputChange('notes')}
+              placeholder="Note brevi..."
+              className="mt-1"
+            />
+          </div>
+        </CardContent>
+      </Card>
 
-      {/* On-Screen Keyboard mount */}
-      <div ref={keyboardRef}>
-      <OnScreenKeyboard
-        isVisible={isVisible}
-        onKeyPress={handleKeyPress}
-        onClose={hideKeyboard}
-      />
-    </div>
+      {/* Actions */}
+      <div className="flex justify-center space-x-4">
+        <Button onClick={handleAddSection} className="bg-gradient-to-r from-blue-500 to-purple-500 hover:from-blue-600 hover:to-purple-600">
+          <Plus className="w-4 h-4 mr-2" />
+          Aggiungi Sezione
+        </Button>
+      </div>
     </div>
   );
 };
