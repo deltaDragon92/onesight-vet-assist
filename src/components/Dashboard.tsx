@@ -70,16 +70,6 @@ const Dashboard = ({ onStartNewVisit }: DashboardProps) => {
 
   return (
     <div className="p-6 space-y-6">
-      {/* Start New Visit Button */}
-      <div className="flex justify-center">
-        <Button 
-          onClick={handleStartNewVisit}
-          className="h-16 px-8 text-lg font-semibold bg-gradient-to-r from-blue-600 to-teal-600 hover:from-blue-700 hover:to-teal-700 text-white shadow-lg"
-        >
-          <Play className="w-6 h-6 mr-3" />
-          Avvia Nuova Visita
-        </Button>
-      </div>
 
       {/* Quick Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
