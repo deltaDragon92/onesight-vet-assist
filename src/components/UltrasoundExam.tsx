@@ -313,20 +313,7 @@ const UltrasoundExam = ({ onExamCompleted }: UltrasoundExamProps) => {
         </Card>
 
         {/* Control Panel */}
-        <Card className="bg-white shadow-sm">
-          <CardHeader>
-            <CardTitle className="text-lg">Controlli Esame</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {/* AI Controls */}
-           
-            {/* Complete Exam Button */}
-            
-
-            {/* Quick Settings */}
-            
-          </CardContent>
-        </Card>
+        
       </div>
 
       {/* AI Guidance Panel */}
