@@ -63,9 +63,7 @@ const MedicalDictionary = ({ isOpen, onClose }: MedicalDictionaryProps) => {
               <BookOpen className="w-6 h-6 text-green-600" />
               <span>Dizionario Medico Veterinario</span>
             </DialogTitle>
-            <Button variant="ghost" size="icon" onClick={onClose}>
-              <X className="w-4 h-4" />
-            </Button>
+            
           </div>
         </DialogHeader>
 
