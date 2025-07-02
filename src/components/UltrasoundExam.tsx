@@ -195,29 +195,7 @@ const UltrasoundExam = ({ onExamCompleted }: UltrasoundExamProps) => {
   return (
     <div className="p-6 space-y-6">
       {/* Patient Info Bar */}
-      <Card className="bg-white shadow-sm">
-        <CardContent className="p-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-teal-500 rounded-full flex items-center justify-center">
-                <span className="text-white font-bold">L</span>
-              </div>
-              <div>
-                <h3 className="text-lg font-semibold text-slate-800">Luna - Labrador Retriever</h3>
-                <p className="text-sm text-slate-600">Proprietario: Famiglia Bianchi • Età: 5 anni • Peso: 28kg</p>
-              </div>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Badge variant="outline" className={`${
-                examCompleted ? 'bg-green-50 text-green-700 border-green-200' : 'bg-blue-50 text-blue-700 border-blue-200'
-              }`}>
-                {examCompleted ? 'Esame completato' : 'Esame in corso'}
-              </Badge>
-              <span className="text-sm text-slate-500">12:34</span>
-            </div>
-          </div>
-        </CardContent>
-      </Card>
+      
 
       {/* Main Exam Interface */}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
