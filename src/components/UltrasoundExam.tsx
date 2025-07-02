@@ -171,8 +171,8 @@ const UltrasoundExam = ({ onExamCompleted }: UltrasoundExamProps) => {
            <div className="
               w-full
               h-[50vh]      /* 40% viewport height su schermi piccoli */
-              md:h-[50vh]   /* 50% su tablet e up */
-              lg:h-[60vh]   /* 60% su desktop large */
+              md:h-[80vh]   /* 50% su tablet e up */
+              lg:h-[90vh]   /* 60% su desktop large */
               max-h-screen  /* mai più alta del device */
               bg-gradient-to-br from-slate-100 to-slate-200
               relative overflow-hidden flex items-center justify-center
