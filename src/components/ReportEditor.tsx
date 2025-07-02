@@ -50,7 +50,7 @@ const ReportEditor = ({ patientName = "Luna", onReportCompleted, onReportShared 
   const [showDictionary, setShowDictionary] = useState(false);
 
   // On-Screen Keyboard hook
-  const { isVisible, hideKeyboard, handleKeyPress, register } = useOnScreenKeyboard({
+  const { isVisible, hideKeyboard, handleKeyPress, register, keyboardRef  } = useOnScreenKeyboard({
     onKeyPress: (key, inputRef) => {
       console.log('Key pressed:', key, 'on', inputRef?.name);
       if (inputRef && inputRef.current) {
@@ -135,7 +135,7 @@ const ReportEditor = ({ patientName = "Luna", onReportCompleted, onReportShared 
                   placeholder="Cerca nel referto..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  onFocus={() => register(searchRef.current)}
+                  onFocus={() => register(someRef)}
                   className="pl-10 w-64"
                 />
               </div>
@@ -154,7 +154,7 @@ const ReportEditor = ({ patientName = "Luna", onReportCompleted, onReportShared 
         value={/* formData.name */ ''}
         onChange={/* handleInputChange('name') */ () => {}}
         placeholder="Es. Mario Rossi"
-        onFocus={() => register(nameRef.current)}
+        onFocus={() => register(someRef)}
         className="mt-1"
       />
 
@@ -166,7 +166,7 @@ const ReportEditor = ({ patientName = "Luna", onReportCompleted, onReportShared 
         value={/* formData.email */ ''}
         onChange={/* handleInputChange('email') */ () => {}}
         placeholder="mario.rossi@example.com"
-        onFocus={() => register(emailRef.current)}
+        onFocus={() => register(someRef)}
         className="mt-1"
       />
 
@@ -178,7 +178,7 @@ const ReportEditor = ({ patientName = "Luna", onReportCompleted, onReportShared 
         value={/* formData.message */ ''}
         onChange={/* handleInputChange('message') */ () => {}}
         placeholder="Scrivi il tuo messaggio qui..."
-        onFocus={() => register(messageRef.current)}
+        onFocus={() => register(someRef)}
         className="mt-1"
       />
 
@@ -189,16 +189,18 @@ const ReportEditor = ({ patientName = "Luna", onReportCompleted, onReportShared 
         value={/* formData.notes */ ''}
         onChange={/* handleInputChange('notes') */ () => {}}
         placeholder="Note brevi..."
-        onFocus={() => register(notesRef.current)}
+        onFocus={() => register(someRef)}
         className="mt-1"
       />
 
       {/* On-Screen Keyboard mount */}
+      <div ref={keyboardRef}>
       <OnScreenKeyboard
         isVisible={isVisible}
         onKeyPress={handleKeyPress}
         onClose={hideKeyboard}
       />
+    </div>
     </div>
   );
 };
