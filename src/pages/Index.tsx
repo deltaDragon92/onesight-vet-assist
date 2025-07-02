@@ -238,60 +238,7 @@ const Index = () => {
       </header>
 
       {/* Step Navigation */}
-      <div className="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
-            <TabsList className="grid w-full grid-cols-5 bg-slate-50 dark:bg-slate-700 p-1 h-16">
-              {steps.map((step, index) => {
-                const stepStatus = getStepStatus(step.id);
-                const isLocked = stepStatus === 'locked';
-                const isCompleted = stepStatus === 'completed';
-                const isActive = activeTab === step.id;
-
-                return (
-                  
-                    <TooltipContent>
-                      <div className="text-center">
-                        <p className="font-medium">{step.label}</p>
-                        <p className="text-xs text-slate-500">{step.description}</p>
-                        {isLocked && (
-                          <p className="text-xs text-orange-600 mt-1">
-                            Completa lo step precedente per sbloccare
-                          </p>
-                        )}
-                        {isCompleted && (
-                          <p className="text-xs text-green-600 mt-1">
-                            ✓ Step completato
-                          </p>
-                        )}
-                      </div>
-                    </TooltipContent>
-                  </Tooltip>
-                );
-              })}
-            </TabsList>
-
-            <TabsContent value="dashboard" className="mt-0">
-              <Dashboard onStartNewVisit={handleStartNewVisit} />
-            </TabsContent>
-            <TabsContent value="digitaltwin" className="mt-0">
-              <DigitalTwin onPatientSelected={handlePatientSelected} />
-            </TabsContent>
-            <TabsContent value="exam" className="mt-0">
-              <UltrasoundExam onExamCompleted={handleExamCompleted} />
-            </TabsContent>
-            <TabsContent value="reports" className="mt-0">
-              <ReportModule onReportCompleted={handleReportCompleted} onReportShared={handleReportShared} />
-            </TabsContent>
-            <TabsContent value="petowner" className="mt-0">
-              <PetOwnerPreview />
-            </TabsContent>
-            <TabsContent value="sidebar" className="mt-0">
-              {renderSidebarContent()}
-            </TabsContent>
-          </Tabs>
-        </div>
-      </div>
+   
 
       {/* Terminate Visit Confirmation Dialog */}
       <Dialog open={showTerminateDialog} onOpenChange={setShowTerminateDialog}>
