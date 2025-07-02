@@ -69,6 +69,7 @@ const Dashboard = ({ onStartNewVisit }: DashboardProps) => {
         ))}
 
         
+      </div>
 
       {/* Patient Selection Dialog */}
       <PatientSelection
