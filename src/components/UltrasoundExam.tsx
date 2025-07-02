@@ -323,41 +323,6 @@ const UltrasoundExam = ({ onExamCompleted }: UltrasoundExamProps) => {
         </Card>
 
         
-
-            {/* Complete Exam Button */}
-            <div className="border-t pt-4">
-              <Button 
-                onClick={handleCompleteExam}
-                className="w-full h-12 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-medium"
-                disabled={examCompleted}
-              >
-                <CheckCircle className="w-4 h-4 mr-2" />
-                {examCompleted ? 'Esame Completato' : 'Completa Esame'}
-              </Button>
-            </div>
-
-            {/* Quick Settings */}
-            <div className="border-t pt-4">
-              <h4 className="text-sm font-medium text-slate-700 mb-3">Impostazioni Rapide</h4>
-              <div className="space-y-2">
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-slate-600">Gain</span>
-                  <input type="range" className="w-20" min="0" max="100" defaultValue="75" />
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-slate-600">Depth</span>
-                  <input type="range" className="w-20" min="0" max="100" defaultValue="60" />
-                </div>
-                <div className="flex justify-between items-center">
-                  <span className="text-sm text-slate-600">Focus</span>
-                  <input type="range" className="w-20" min="0" max="100" defaultValue="50" />
-                </div>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
-
       {/* AI Guidance Panel */}
       {aiGuidanceActive && (
         <Card className="bg-gradient-to-r from-cyan-50 to-blue-50 border-cyan-200 shadow-sm">
