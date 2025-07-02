@@ -210,7 +210,7 @@ const UltrasoundExam = ({ onExamCompleted }: UltrasoundExamProps) => {
                   <div className="w-16 h-16 bg-gradient-to-r from-blue-500 to-cyan-500 rounded-full flex items-center justify-center mx-auto mb-6">
                     <Bot className="w-8 h-8 text-white" />
                   </div>
-                  <h3 className="text-xl font-semibold text-slate-800 mb-3">Guida AI non attiva</h3>
+                  <h3 className="text-xl font-semibold text-slate-800 mb-3">Guida AI</h3>
                   
                   <div className="space-y-4">
                     <div>
