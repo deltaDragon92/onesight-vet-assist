@@ -249,34 +249,7 @@ const Index = () => {
                 const isActive = activeTab === step.id;
 
                 return (
-                 
-                        <div className={`flex items-center justify-center relative ${
-                          isCompleted ? 'text-green-600' : 
-                          isActive ? 'text-blue-600' : 
-                          isLocked ? 'text-slate-400' : 'text-slate-600'
-                        }`}>
-                          {isLocked ? (
-                            <Lock className="w-4 h-4" />
-                          ) : isCompleted ? (
-                            <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
-                              <Check className="w-3 h-3 text-white" />
-                            </div>
-                          ) : (
-                            step.icon
-                          )}
-                        </div>
-                        <span className="hidden sm:inline text-center leading-tight">
-                          {step.label}
-                        </span>
-                        
-                        {/* Progress indicator */}
-                        {index < steps.length - 1 && (
-                          <div className={`absolute right-0 top-1/2 w-8 h-0.5 transform translate-x-full -translate-y-1/2 ${
-                            getStepStatus(steps[index + 1].id) !== 'locked' ? 'bg-green-400' : 'bg-slate-300'
-                          }`} />
-                        )}
-                      </TabsTrigger>
-                    </TooltipTrigger>
+                  
                     <TooltipContent>
                       <div className="text-center">
                         <p className="font-medium">{step.label}</p>
