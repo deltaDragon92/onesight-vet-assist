@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogClose, DialogDescription } from '@/components/ui/dialog';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
@@ -105,7 +105,7 @@ const PatientSelection = ({ isOpen, onClose, onPatientSelected }: PatientSelecti
                          patient.ownerName.toLowerCase().includes(searchTerm.toLowerCase()) ||
                          patient.microchip.includes(searchTerm);
     
-    const matchesVet = !veterinarianFilter || patient.veterinarian === veterinarianFilter;
+    const matchesVet = !veterinarianFilter || veterinarianFilter === 'all' || patient.veterinarian === veterinarianFilter;
     
     return matchesSearch && matchesVet;
   });
@@ -158,9 +158,14 @@ const PatientSelection = ({ isOpen, onClose, onPatientSelected }: PatientSelecti
           <div className="flex flex-col h-full">
             {/* Header */}
             <DialogHeader className="flex-row items-center justify-between p-6 bg-white border-b">
-              <DialogTitle className="text-2xl font-semibold text-slate-800">
-                Seleziona o Crea Paziente
-              </DialogTitle>
+              <div>
+                <DialogTitle className="text-2xl font-semibold text-slate-800">
+                  Seleziona o Crea Paziente
+                </DialogTitle>
+                <DialogDescription className="sr-only">
+                  Cerca e seleziona un paziente esistente o crea un nuovo paziente
+                </DialogDescription>
+              </div>
               <DialogClose asChild>
                 <Button variant="ghost" size="icon" className="h-8 w-8">
                   <X className="w-5 h-5" />
@@ -185,7 +190,7 @@ const PatientSelection = ({ isOpen, onClose, onPatientSelected }: PatientSelecti
                     <SelectValue placeholder="Filtra per veterinario" />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="">Tutti i veterinari</SelectItem>
+                    <SelectItem value="all">Tutti i veterinari</SelectItem>
                     {veterinarians.map(vet => (
                       <SelectItem key={vet} value={vet}>{vet}</SelectItem>
                     ))}
@@ -422,6 +427,9 @@ const PatientSelection = ({ isOpen, onClose, onPatientSelected }: PatientSelecti
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
               <DialogTitle>Conferma eliminazione</DialogTitle>
+              <DialogDescription>
+                Questa azione non può essere annullata.
+              </DialogDescription>
             </DialogHeader>
             <p className="text-sm text-slate-600">
               Sei sicuro di eliminare {patients.find(p => p.id === showDeleteConfirm)?.name}?
