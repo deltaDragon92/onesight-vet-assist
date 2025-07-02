@@ -323,44 +323,80 @@ const UltrasoundExam = ({ onExamCompleted }: UltrasoundExamProps) => {
         </Card>
 
         {/* Control Panel */}
-        
-
-      {/* AI Guidance Panel */}
-      {aiGuidanceActive && (
-        <Card className="bg-gradient-to-r from-cyan-50 to-blue-50 border-cyan-200 shadow-sm">
+        <Card className="bg-white shadow-sm">
           <CardHeader>
-            <CardTitle className="text-lg text-cyan-800 flex items-center">
-              <div className="w-2 h-2 bg-cyan-500 rounded-full mr-2 animate-pulse"></div>
-              Guida AI Attiva
-            </CardTitle>
+            <CardTitle className="text-lg">Controlli Esame</CardTitle>
           </CardHeader>
-          <CardContent>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              <div>
-                <h4 className="font-medium text-slate-800 mb-2">Strutture Rilevate</h4>
-                <div className="space-y-2">
-                  {detectedStructures.map((structure) => (
-                    <div key={structure.id} className="flex items-center justify-between bg-white p-2 rounded">
-                      <span className="text-sm text-slate-700">{structure.name}</span>
-                      <Badge variant="secondary" className="text-xs">
-                        {structure.confidence}%
-                      </Badge>
-                    </div>
-                  ))}
-                </div>
-              </div>
-              <div>
-                <h4 className="font-medium text-slate-800 mb-2">Suggerimenti</h4>
-                <div className="space-y-2 text-sm text-slate-600">
-                  <p>• Aumenta la profondità per una migliore visualizzazione</p>
-                  <p>• Posiziona la sonda più in basso per il fegato</p>
-                  <p>• Ottima visualizzazione cardiaca</p>
-                </div>
-              </div>
+          <CardContent className="space-y-4">
+            {/* AI Controls */}
+            <div className="space-y-3">
+              <Button 
+                onClick={handleStartAI}
+                className={`w-full h-12 text-sm font-medium ${
+                  aiGuidanceActive 
+                    ? 'bg-cyan-500 hover:bg-cyan-600 text-white' 
+                    : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+                }`}
+              >
+                {aiGuidanceActive ? 'Disattiva AI' : 'Attiva Guida AI'}
+              </Button>
+              
+              <Button 
+                onClick={handleRecord}
+                variant={isRecording ? "destructive" : "outline"}
+                className="w-full h-12 text-sm font-medium"
+              >
+                {isRecording ? (
+                  <>
+                    <Square className="w-4 h-4 mr-2" />
+                    Stop Registrazione
+                  </>
+                ) : (
+                  <>
+                    <Play className="w-4 h-4 mr-2" />
+                    Inizia Registrazione
+                  </>
+                )}
+              </Button>
             </div>
+
+            <div className="border-t pt-4 space-y-3">
+              <Button variant="outline" className="w-full h-10 text-sm">
+                <Camera className="w-4 h-4 mr-2" />
+                Snapshot
+              </Button>
+              
+              <Button variant="outline" className="w-full h-10 text-sm">
+                <Save className="w-4 h-4 mr-2" />
+                Salva Frame
+              </Button>
+              
+              <Button variant="outline" className="w-full h-10 text-sm">
+                <MapPin className="w-4 h-4 mr-2" />
+                Marca Struttura
+              </Button>
+            </div>
+
+            {/* Complete Exam Button */}
+            <div className="border-t pt-4">
+              <Button 
+                onClick={handleCompleteExam}
+                className="w-full h-12 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-medium"
+                disabled={examCompleted}
+              >
+                <CheckCircle className="w-4 h-4 mr-2" />
+                {examCompleted ? 'Esame Completato' : 'Completa Esame'}
+              </Button>
+            </div>
+
+            {/* Quick Settings */}
+            
           </CardContent>
         </Card>
-      )}
+      </div>
+
+      {/* AI Guidance Panel */}
+      
 
       {/* AI Guidance Mode Full-Screen Overlay */}
       {aiGuidanceMode && (
