@@ -2,7 +2,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Backspace, Space, CornerDownLeft } from 'lucide-react';
+import { Delete, Space, CornerDownLeft } from 'lucide-react';
 
 interface OnScreenKeyboardProps {
   isVisible: boolean;
@@ -83,7 +83,7 @@ const OnScreenKeyboard = ({ isVisible, onKeyPress, onClose }: OnScreenKeyboardPr
               onClick={handleBackspace}
               className="min-w-[80px] h-10 text-sm font-medium hover:bg-red-50 hover:border-red-300 transition-colors"
             >
-              <Backspace className="w-4 h-4 mr-1" />
+              <Delete className="w-4 h-4 mr-1" />
               Cancella
             </Button>
             <Button
