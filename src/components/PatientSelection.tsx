@@ -9,7 +9,10 @@ import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sh
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-
+import Twemoji from 'react-twemoji';
+<Twemoji options={{ folder: 'svg', ext: '.svg' }}>
+  {getSpeciesIcon(patient.species)}
+</Twemoji>
 interface Patient {
   id: string;
   name: string;
