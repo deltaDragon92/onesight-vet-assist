@@ -64,7 +64,7 @@ const Dashboard = ({ onStartNewVisit }: DashboardProps) => {
         ))}
 
         {/* Recent Activity Card spans 3 columns */}
-        <Card className="bg-white shadow-sm md:col-span-3 lg:col-span-3 md:h-60">
+        <Card className="bg-white shadow-sm md:col-span-3 lg:col-span-3 md:h-80">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <Activity className="w-5 h-5 text-blue-600" />
