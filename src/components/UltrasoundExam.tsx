@@ -321,16 +321,7 @@ const UltrasoundExam = ({ onExamCompleted }: UltrasoundExamProps) => {
             {/* AI Controls */}
            
             {/* Complete Exam Button */}
-            <div className="border-t pt-4">
-              <Button 
-                onClick={handleCompleteExam}
-                className="w-full h-12 bg-gradient-to-r from-green-500 to-green-600 hover:from-green-600 hover:to-green-700 text-white font-medium"
-                disabled={examCompleted}
-              >
-                <CheckCircle className="w-4 h-4 mr-2" />
-                {examCompleted ? 'Esame Completato' : 'Completa Esame'}
-              </Button>
-            </div>
+            
 
             {/* Quick Settings */}
             
