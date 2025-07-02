@@ -35,6 +35,13 @@ const Dashboard = ({ onStartNewVisit }: DashboardProps) => {
       action: 'reports'
     },
     {
+      title: 'Formazione Continua',
+      description: 'Corsi di microlearning',
+      icon: BookOpen,
+      color: 'from-purple-500 to-purple-600',
+      action: 'training'
+    },
+    {
       title: 'Storico Pazienti',
       description: 'Cerca e visualizza pazienti',
       icon: Users,
