@@ -12,7 +12,7 @@ const Dashboard = ({ onStartNewVisit }: DashboardProps) => {
   const [showPatientSelection, setShowPatientSelection] = useState(false);
 
   const quickActions = [
-    /{
+    {
       title: 'Nuovo Esame Ecografico',
       description: 'Inizia un nuovo esame con guida AI',
       icon: Camera,
@@ -22,9 +22,9 @@ const Dashboard = ({ onStartNewVisit }: DashboardProps) => {
   ];
 
   const recentActivity = [
-    { patient: 'Luna (Labrador)', type: 'Ecocardiografia', time: '10:30', status: 'completed' },
+   /* { patient: 'Luna (Labrador)', type: 'Ecocardiografia', time: '10:30', status: 'completed' },
     { patient: 'Micio (Gatto Europeo)', type: 'Eco Addominale', time: '11:15', status: 'in-progress' },
-    { patient: 'Rocky (Pastore Tedesco)', type: 'Eco Toracica', time: '12:00', status: 'scheduled' },
+    { patient: 'Rocky (Pastore Tedesco)', type: 'Eco Toracica', time: '12:00', status: 'scheduled' },*/
   ];
 
   const upcomingAppointments = [
@@ -77,6 +77,11 @@ const Dashboard = ({ onStartNewVisit }: DashboardProps) => {
           </CardHeader>
           <CardContent className="overflow-y-auto h-full">
             <div className="space-y-3 md:space-y-2">
+              {recentActivity.map((activity, idx) => (
+                <div
+                  key={idx}
+                  className="flex items-center justify-between p-2 bg-slate-50 rounded-lg"
+                >
                   <div className="flex items-center space-x-2">
                     <div
                       className={`w-3 h-3 rounded-full ${
