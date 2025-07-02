@@ -12,19 +12,19 @@ const Dashboard = ({ onStartNewVisit }: DashboardProps) => {
   const [showPatientSelection, setShowPatientSelection] = useState(false);
 
   const quickActions = [
-    /*{
+    /{
       title: 'Nuovo Esame Ecografico',
       description: 'Inizia un nuovo esame con guida AI',
       icon: Camera,
       color: 'from-blue-500 to-blue-600',
       action: 'exam',
-    },*/
+    },
   ];
 
   const recentActivity = [
-    { patient: 'Luna (Labrador)', type: 'Ecocardiografia', time: '10:30', status: 'completed' },
+   /* { patient: 'Luna (Labrador)', type: 'Ecocardiografia', time: '10:30', status: 'completed' },
     { patient: 'Micio (Gatto Europeo)', type: 'Eco Addominale', time: '11:15', status: 'in-progress' },
-    { patient: 'Rocky (Pastore Tedesco)', type: 'Eco Toracica', time: '12:00', status: 'scheduled' },
+    { patient: 'Rocky (Pastore Tedesco)', type: 'Eco Toracica', time: '12:00', status: 'scheduled' },*/
   ];
 
   const upcomingAppointments = [
