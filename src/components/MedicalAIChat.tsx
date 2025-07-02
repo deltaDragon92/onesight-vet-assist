@@ -30,7 +30,7 @@ const MedicalAIChat = ({ isOpen, onClose, onResponse, patientName, selectedBlock
       type: 'ai',
       content: `Ciao! Sono il tuo assistente AI medico specializzato in diagnostica veterinaria. Posso aiutarti con:
 
-🔍 **Interpretazione di referti ecografici**
+🔍 <bold>**Interpretazione di referti ecografici**</>
 📋 **Suggerimenti diagnostici** 
 💊 **Raccomandazioni terapeutiche**
 📚 **Consultazione di linee guida veterinarie**
@@ -155,7 +155,7 @@ Vuoi che generi il testo completo per una sezione specifica del referto?`
   ];
 
   return (
-    
+    <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden p-0">
         <DialogHeader className="p-6 pb-4 border-b">
           <div className="flex items-center justify-between">
