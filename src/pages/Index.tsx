@@ -59,7 +59,7 @@ const Index = () => {
     },
     {
       id: 'reports',
-      label: 'Referti',
+      label: 'Referto',
       icon: <FileText className="w-5 h-5" />,
       description: 'Refertazione assistita'
     },
