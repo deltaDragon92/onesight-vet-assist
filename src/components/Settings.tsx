@@ -23,8 +23,7 @@ const Settings = () => {
   });
 
   return (
-    <div className="p-6 space-y-6 max-w-4xl mx-auto">
-      style={{ scrollbarWidth: 'none' }}
+    <div className="p-6 space-y-6 max-w-4xl mx-auto " style={{ scrollbarWidth: 'none' }}>
       {/* Header */}
       <div>
         <h1 className="text-2xl font-bold text-slate-800 dark:text-slate-100">Impostazioni</h1>
