@@ -12,13 +12,13 @@ const Dashboard = ({ onStartNewVisit }: DashboardProps) => {
   const [showPatientSelection, setShowPatientSelection] = useState(false);
 
   const quickActions = [
-    {
+    /*{
       title: 'Nuovo Esame Ecografico',
       description: 'Inizia un nuovo esame con guida AI',
       icon: Camera,
       color: 'from-blue-500 to-blue-600',
       action: 'exam',
-    },
+    },*/
   ];
 
   const recentActivity = [
