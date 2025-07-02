@@ -213,7 +213,7 @@ const DigitalTwin = ({ onPatientSelected }: DigitalTwinProps) => {
               disabled={selectedPatient === patientData.name}
             >
               <User className="w-4 h-4 mr-2" />
-              {selectedPatient === patientData.name ? 'Paziente Selezionato' : 'Prosegui'}
+              {selectedPatient === patientData.name ? 'Paziente Selezionato' : 'Seleziona paziente'}
             </Button>
           </div>
         </CardContent>
