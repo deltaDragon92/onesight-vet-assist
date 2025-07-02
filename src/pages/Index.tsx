@@ -249,7 +249,21 @@ const Index = () => {
                 const isActive = activeTab === step.id;
 
                 return (
-                 
+                  <Tooltip key={step.id}>
+                    <TooltipTrigger asChild>
+                      <TabsTrigger 
+                        value={step.id}
+                        disabled={isLocked}
+                        className={`
+                          flex flex-col items-center justify-center space-y-1 text-xs font-medium h-14 relative
+                          ${isLocked 
+                            ? 'opacity-50 cursor-not-allowed' 
+                            : 'data-[state=active]:bg-white data-[state=active]:text-blue-600 data-[state=active]:shadow-sm'
+                          }
+                          ${isCompleted ? 'bg-green-50 text-green-700' : ''}
+                          ${isActive && !isCompleted ? 'bg-blue-50 text-blue-700' : ''}
+                        `}
+                      >
                         <div className={`flex items-center justify-center relative ${
                           isCompleted ? 'text-green-600' : 
                           isActive ? 'text-blue-600' : 
