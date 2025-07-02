@@ -209,11 +209,11 @@ const PatientSelection = ({ isOpen, onClose, onPatientSelected }: PatientSelecti
             </div>
 
             {/* Patients Cards - Horizontal Scroll */}
-            <div className="flex-1 overflow-hidden">
-              <div
-                className="flex gap-4 h-full overflow-x-auto pt-6 pb-4 px-6 scroll-pl-6 scroll-pr-6"
-                style={{ scrollbarWidth: 'none' }}
-              >
+            <div className="flex-1 flex flex-col px-6 py-6">
+             <div 
+               className="flex gap-4 pb-4 pr-6" 
+               style={{ scrollbarWidth: 'none' }}
+                 >
                 {filteredPatients.map((patient) => (
                   <Card
                     key={patient.id}
