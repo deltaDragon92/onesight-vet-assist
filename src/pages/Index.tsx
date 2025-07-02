@@ -27,8 +27,8 @@ const Index = () => {
   // Step progression state
   const [stepProgression, setStepProgression] = useState({
     dashboard: { completed: false, unlocked: true },
-    digitaltwin: { completed: false, unlocked: false },
-    exam: { completed: true, unlocked: true },
+    digitaltwin: { completed: false, unlocked: true },
+    exam: { completed: false, unlocked: true },
     reports: { completed: false, unlocked: false },
     petowner: { completed: false, unlocked: false }
   });
