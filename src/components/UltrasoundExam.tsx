@@ -322,60 +322,7 @@ const UltrasoundExam = ({ onExamCompleted }: UltrasoundExamProps) => {
           </CardContent>
         </Card>
 
-        {/* Control Panel */}
-        <Card className="bg-white shadow-sm">
-          <CardHeader>
-            <CardTitle className="text-lg">Controlli Esame</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            {/* AI Controls */}
-            <div className="space-y-3">
-              <Button 
-                onClick={handleStartAI}
-                className={`w-full h-12 text-sm font-medium ${
-                  aiGuidanceActive 
-                    ? 'bg-cyan-500 hover:bg-cyan-600 text-white' 
-                    : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
-                }`}
-              >
-                {aiGuidanceActive ? 'Disattiva AI' : 'Attiva Guida AI'}
-              </Button>
-              
-              <Button 
-                onClick={handleRecord}
-                variant={isRecording ? "destructive" : "outline"}
-                className="w-full h-12 text-sm font-medium"
-              >
-                {isRecording ? (
-                  <>
-                    <Square className="w-4 h-4 mr-2" />
-                    Stop Registrazione
-                  </>
-                ) : (
-                  <>
-                    <Play className="w-4 h-4 mr-2" />
-                    Inizia Registrazione
-                  </>
-                )}
-              </Button>
-            </div>
-
-            <div className="border-t pt-4 space-y-3">
-              <Button variant="outline" className="w-full h-10 text-sm">
-                <Camera className="w-4 h-4 mr-2" />
-                Snapshot
-              </Button>
-              
-              <Button variant="outline" className="w-full h-10 text-sm">
-                <Save className="w-4 h-4 mr-2" />
-                Salva Frame
-              </Button>
-              
-              <Button variant="outline" className="w-full h-10 text-sm">
-                <MapPin className="w-4 h-4 mr-2" />
-                Marca Struttura
-              </Button>
-            </div>
+        
 
             {/* Complete Exam Button */}
             <div className="border-t pt-4">
