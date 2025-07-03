@@ -1,5 +1,6 @@
+
 import React, { useState } from 'react';
-import { Camera, Activity, Play } from 'lucide-react';
+import { Camera, FileText, BookOpen, Clock, Activity, Users, TrendingUp, AlertCircle, Play } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import PatientSelection from './PatientSelection';
@@ -11,6 +12,13 @@ interface DashboardProps {
 const Dashboard = ({ onStartNewVisit }: DashboardProps) => {
   const [showPatientSelection, setShowPatientSelection] = useState(false);
 
+  const quickStats = [
+    { title: 'Esami Oggi', value: '12', icon: Camera, color: 'bg-blue-500' },
+    { title: 'Referti Completati', value: '8', icon: FileText, color: 'bg-green-500' },
+    { title: 'Pazienti in Attesa', value: '3', icon: Clock, color: 'bg-orange-500' },
+    { title: 'Accuratezza AI', value: '94%', icon: TrendingUp, color: 'bg-teal-500' }
+  ];
+
   const quickActions = [
     {
       title: 'Nuovo Esame Ecografico',
@@ -18,6 +26,27 @@ const Dashboard = ({ onStartNewVisit }: DashboardProps) => {
       icon: Camera,
       color: 'from-blue-500 to-blue-600',
       action: 'exam'
+    },
+    {
+      title: 'Gestione Referti',
+      description: 'Visualizza e modifica i referti',
+      icon: FileText,
+      color: 'from-green-500 to-green-600',
+      action: 'reports'
+    },
+    {
+      title: 'Formazione Continua',
+      description: 'Corsi di microlearning',
+      icon: BookOpen,
+      color: 'from-purple-500 to-purple-600',
+      action: 'training'
+    },
+    {
+      title: 'Storico Pazienti',
+      description: 'Cerca e visualizza pazienti',
+      icon: Users,
+      color: 'from-teal-500 to-teal-600',
+      action: 'patients'
     }
   ];
 
@@ -27,96 +56,94 @@ const Dashboard = ({ onStartNewVisit }: DashboardProps) => {
     { patient: 'Rocky (Pastore Tedesco)', type: 'Eco Toracica', time: '12:00', status: 'scheduled' }
   ];
 
-  const upcomingAppointments = [
-    { patient: 'Bella (Bulldog)', date: '2025-07-03', time: '09:00' },
-    { patient: 'Leo (Gatto Ragdoll)', date: '2025-07-03', time: '11:00' },
-    { patient: 'Max (Beagle)', date: '2025-07-03', time: '14:00' }
-  ];
+  const handleStartNewVisit = () => {
+    setShowPatientSelection(true);
+  };
 
-  const handleStartNewVisit = () => setShowPatientSelection(true);
   const handlePatientSelected = (patient?: any) => {
     const patientName = patient ? patient.name : undefined;
-    onStartNewVisit?.(patientName);
+    if (onStartNewVisit) {
+      onStartNewVisit(patientName);
+    }
     setShowPatientSelection(false);
   };
 
   return (
     <div className="p-6 space-y-6">
 
-      {/* Quick Actions + Recent Activity */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-4">
+      {/* Quick Stats */}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        {quickStats.map((stat, index) => (
+          <Card key={index} className="bg-white shadow-sm hover:shadow-md transition-shadow">
+            <CardContent className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-slate-600">{stat.title}</p>
+                  <p className="text-2xl font-bold text-slate-800">{stat.value}</p>
+                </div>
+                <div className={`w-12 h-12 ${stat.color} rounded-lg flex items-center justify-center`}>
+                  <stat.icon className="w-6 h-6 text-white" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
+      {/* Quick Actions */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         {quickActions.map((action, index) => (
-          <Card
-            key={index}
-            className="group hover:shadow-lg transition-all duration-200 cursor-pointer bg-white"
-          >
-            <CardContent className="p-6 flex flex-col h-full">
-              <div
-                className={`w-16 h-16 bg-gradient-to-r ${action.color} rounded-2xl flex items-center justify-center mb-4 group-hover:scale-105 transition-transform`}
-              >
+          <Card key={index} className="group hover:shadow-lg transition-all duration-200 cursor-pointer bg-white">
+            <CardContent className="p-6">
+              <div className={`w-16 h-16 bg-gradient-to-r ${action.color} rounded-2xl flex items-center justify-center mb-4 group-hover:scale-105 transition-transform`}>
                 <action.icon className="w-8 h-8 text-white" />
               </div>
               <h3 className="text-lg font-semibold text-slate-800 mb-2">{action.title}</h3>
               <p className="text-slate-600 text-sm mb-4">{action.description}</p>
-              <Button
-                variant="outline"
+              <Button 
+                variant="outline" 
                 onClick={handleStartNewVisit}
-                className="w-full mt-auto border-slate-200 hover:bg-slate-50 group-hover:border-blue-300 transition-colors"
+                className="w-full border-slate-200 hover:bg-slate-50 group-hover:border-blue-300 transition-colors"
               >
                 Inizia
               </Button>
             </CardContent>
           </Card>
         ))}
+      </div>
 
-        {/* Recent Activity Card spans 3 columns */}
-        <Card className="bg-white shadow-sm md:col-span-3 lg:col-span-3 md:h-60">
+      {/* Recent Activity and Alerts */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        {/* Recent Activity */}
+        <Card className="lg:col-span-2 bg-white shadow-sm">
           <CardHeader>
             <CardTitle className="flex items-center space-x-2">
               <Activity className="w-5 h-5 text-blue-600" />
               <span>Attività Recente</span>
             </CardTitle>
           </CardHeader>
-          <CardContent className="overflow-y-auto h-full">
-            <div className="space-y-3 md:space-y-2">
-              {recentActivity.map((activity, idx) => (
-                <div
-                  key={idx}
-                  className="flex items-center justify-between p-2 bg-slate-50 rounded-lg"
-                >
-                  <div className="flex items-center space-x-2">
-                    <div
-                      className={`w-3 h-3 rounded-full ${
-                        activity.status === 'completed'
-                          ? 'bg-green-500'
-                          : activity.status === 'in-progress'
-                          ? 'bg-blue-500'
-                          : 'bg-slate-400'
-                      }`}
-                    ></div>
+          <CardContent>
+            <div className="space-y-4">
+              {recentActivity.map((activity, index) => (
+                <div key={index} className="flex items-center justify-between p-3 bg-slate-50 rounded-lg">
+                  <div className="flex items-center space-x-3">
+                    <div className={`w-3 h-3 rounded-full ${
+                      activity.status === 'completed' ? 'bg-green-500' :
+                      activity.status === 'in-progress' ? 'bg-blue-500' : 'bg-slate-400'
+                    }`}></div>
                     <div>
-                      <p className="font-medium text-slate-800 text-sm">{activity.patient}</p>
-                      <p className="text-xs text-slate-600">{activity.type}</p>
+                      <p className="font-medium text-slate-800">{activity.patient}</p>
+                      <p className="text-sm text-slate-600">{activity.type}</p>
                     </div>
                   </div>
                   <div className="text-right">
-                    <p className="text-xs font-medium text-slate-800">
-                      {activity.time}
-                    </p>
-                    <p
-                      className={`text-xxs ${
-                        activity.status === 'completed'
-                          ? 'text-green-600'
-                          : activity.status === 'in-progress'
-                          ? 'text-blue-600'
-                          : 'text-slate-500'
-                      }`}
-                    >
-                      {activity.status === 'completed'
-                        ? 'Completato'
-                        : activity.status === 'in-progress'
-                        ? 'In corso'
-                        : 'Programmato'}
+                    <p className="text-sm font-medium text-slate-800">{activity.time}</p>
+                    <p className={`text-xs ${
+                      activity.status === 'completed' ? 'text-green-600' :
+                      activity.status === 'in-progress' ? 'text-blue-600' : 'text-slate-500'
+                    }`}>
+                      {activity.status === 'completed' ? 'Completato' :
+                       activity.status === 'in-progress' ? 'In corso' : 'Programmato'}
                     </p>
                   </div>
                 </div>
@@ -124,30 +151,31 @@ const Dashboard = ({ onStartNewVisit }: DashboardProps) => {
             </div>
           </CardContent>
         </Card>
-      </div>
 
-      {/* Upcoming Appointments Timeline full width */}
-      <Card className="bg-white shadow-sm md:col-span-4 lg:col-span-4">
-        <CardHeader>
-          <CardTitle>Prossimi Appuntamenti</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="relative timeline">
-            {upcomingAppointments.map((appt, idx) => (
-              <div key={idx} className="flex items-start mb-6">
-                <div className="flex flex-col items-center mr-4">
-                  <div className="w-3 h-3 bg-blue-600 rounded-full mt-1"></div>
-                  {idx < upcomingAppointments.length - 1 && <div className="w-px h-full bg-blue-200"></div>}
-                </div>
-                <div>
-                  <p className="text-sm font-medium text-slate-800">{appt.patient}</p>
-                  <p className="text-xs text-slate-500">{appt.date} - {appt.time}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </CardContent>
-      </Card>
+        {/* Alerts and Notifications */}
+        <Card className="bg-white shadow-sm">
+          <CardHeader>
+            <CardTitle className="flex items-center space-x-2">
+              <AlertCircle className="w-5 h-5 text-orange-600" />
+              <span>Avvisi</span>
+            </CardTitle>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            <div className="p-3 bg-orange-50 border border-orange-200 rounded-lg">
+              <p className="text-sm font-medium text-orange-800">Calibrazione Sonda</p>
+              <p className="text-xs text-orange-600 mt-1">Scadenza: 3 giorni</p>
+            </div>
+            <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg">
+              <p className="text-sm font-medium text-blue-800">Nuovo Aggiornamento</p>
+              <p className="text-xs text-blue-600 mt-1">OneSight v2.1 disponibile</p>
+            </div>
+            <div className="p-3 bg-green-50 border border-green-200 rounded-lg">
+              <p className="text-sm font-medium text-green-800">Formazione Completata</p>
+              <p className="text-xs text-green-600 mt-1">Modulo Ecocardiografia</p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
 
       {/* Patient Selection Dialog */}
       <PatientSelection

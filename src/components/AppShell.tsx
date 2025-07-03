@@ -1,103 +1,68 @@
 
 import React, { useState } from 'react';
 import { Users, Camera, FileText } from 'lucide-react';
-import { Button } from '@/components/ui/button';
+import { cn } from '@/lib/utils';
 import PatientsApp from './apps/PatientsApp';
 import LiveExamApp from './apps/LiveExamApp';
 import ReportsApp from './apps/ReportsApp';
 
-interface AppShellProps {
-  onStartNewVisit?: () => void;
-  onPatientSelected?: (patientName?: string) => void;
-  onExamCompleted?: () => void;
-  onReportCompleted?: () => void;
-  onReportShared?: () => void;
-}
+type TabType = 'patients' | 'live' | 'reports';
 
-const AppShell = ({ 
-  onStartNewVisit, 
-  onPatientSelected, 
-  onExamCompleted, 
-  onReportCompleted, 
-  onReportShared 
-}: AppShellProps) => {
-  const [activeTab, setActiveTab] = useState('patients');
+const AppShell = () => {
+  const [activeTab, setActiveTab] = useState<TabType>('patients');
 
   const tabs = [
-    { id: 'patients', label: 'Pazienti', icon: Users },
-    { id: 'live', label: 'Live', icon: Camera },
-    { id: 'reports', label: 'Referti', icon: FileText }
+    {
+      id: 'patients' as TabType,
+      label: 'Pazienti',
+      icon: Users,
+      component: PatientsApp
+    },
+    {
+      id: 'live' as TabType,
+      label: 'Live',
+      icon: Camera,
+      component: LiveExamApp
+    },
+    {
+      id: 'reports' as TabType,
+      label: 'Referti',
+      icon: FileText,
+      component: ReportsApp
+    }
   ];
 
-  const renderContent = () => {
-    switch (activeTab) {
-      case 'patients':
-        return <PatientsApp onPatientSelected={onPatientSelected} />;
-      case 'live':
-        return <LiveExamApp onExamCompleted={onExamCompleted} />;
-      case 'reports':
-        return <ReportsApp onReportCompleted={onReportCompleted} onReportShared={onReportShared} />;
-      default:
-        return <PatientsApp onPatientSelected={onPatientSelected} />;
-    }
-  };
+  const ActiveComponent = tabs.find(tab => tab.id === activeTab)?.component || PatientsApp;
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 flex flex-col">
-      {/* Top Header - più sottile */}
-      <header className="bg-white shadow-sm border-b border-blue-100 h-12">
-        <div className="max-w-7xl mx-auto px-4 h-full">
-          <div className="flex justify-between items-center h-full">
-            <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-teal-500 rounded-lg flex items-center justify-center">
-                <Camera className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <h1 className="text-lg font-bold text-slate-800">OneSight</h1>
-              </div>
-            </div>
-            <div className="text-right">
-              <p className="text-sm font-medium text-slate-700">Dr. Mario Rossi</p>
-            </div>
-          </div>
-        </div>
-      </header>
-
+    <div className="h-screen w-full bg-white flex flex-col">
       {/* Main Content Area */}
-      <main className="flex-1 pb-20 overflow-hidden">
-        {renderContent()}
-      </main>
+      <div className="flex-1 overflow-hidden">
+        <ActiveComponent />
+      </div>
 
       {/* Bottom Tab Bar */}
-      <div className="fixed bottom-0 left-0 right-0 bg-white border-t border-slate-200 shadow-lg">
-        <div className="flex justify-around items-center h-20 px-4">
-          {tabs.map((tab) => {
-            const Icon = tab.icon;
-            const isActive = activeTab === tab.id;
-            
-            return (
-              <Button
-                key={tab.id}
-                variant="ghost"
-                onClick={() => setActiveTab(tab.id)}
-                className={`flex flex-col items-center space-y-1 h-16 w-20 rounded-xl transition-all duration-200 ${
-                  isActive 
-                    ? 'bg-blue-50 text-blue-600' 
-                    : 'text-slate-500 hover:text-slate-700 hover:bg-slate-50'
-                }`}
-              >
-                <Icon className={`w-6 h-6 ${isActive ? 'text-blue-600' : 'text-slate-500'}`} />
-                <span className={`text-xs font-medium ${isActive ? 'text-blue-600' : 'text-slate-500'}`}>
-                  {tab.label}
-                </span>
-                {/* Underline indicator */}
-                {isActive && (
-                  <div className="absolute bottom-0 left-1/2 transform -translate-x-1/2 w-12 h-1 bg-blue-600 rounded-full" />
-                )}
-              </Button>
-            );
-          })}
-        </div>
+      <div className="bg-white border-t-2 border-gray-200 px-4 py-3 flex justify-around items-center shadow-lg">
+        {tabs.map((tab) => {
+          const Icon = tab.icon;
+          const isActive = activeTab === tab.id;
+          
+          return (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={cn(
+                "flex flex-col items-center justify-center min-w-[80px] min-h-[64px] rounded-2xl transition-all duration-200",
+                isActive 
+                  ? "bg-blue-500 text-white shadow-md" 
+                  : "text-gray-600 hover:bg-gray-100"
+              )}
+            >
+              <Icon className="w-8 h-8 mb-1" />
+              <span className="text-base font-medium">{tab.label}</span>
+            </button>
+          );
+        })}
       </div>
     </div>
   );

@@ -1,149 +1,107 @@
 
 import React, { useState } from 'react';
-import { FileText, Plus, Calendar, Share, Edit3, Eye, Clock } from 'lucide-react';
+import { Plus, Eye, Edit, Share, ArrowLeft, Calendar } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 
-interface ReportsAppProps {
-  onReportCompleted?: () => void;
-  onReportShared?: () => void;
-}
-
-const ReportsApp = ({ onReportCompleted, onReportShared }: ReportsAppProps) => {
+const ReportsApp = () => {
   const [selectedReport, setSelectedReport] = useState<any>(null);
 
-  // Mock data referti
-  const reports = [
+  const mockReports = [
     {
       id: 1,
       title: 'Ecocardiografia - Luna',
-      patient: 'Luna',
-      date: '2024-01-15',
-      status: 'Completato',
-      type: 'Cardiologica',
-      preview: 'Esame ecocardiografico normale. Strutture cardiache nella norma...'
+      patient: 'Luna (Labrador)',
+      date: '15 Gen 2024',
+      type: 'Cardiologia',
+      status: 'Completato'
     },
     {
       id: 2,
-      title: 'Ecografia Addominale - Rex',
-      patient: 'Rex',
-      date: '2024-01-14',
-      status: 'Bozza',
+      title: 'Eco Addominale - Micio',
+      patient: 'Micio (Gatto Europeo)',
+      date: '14 Gen 2024',
       type: 'Addominale',
-      preview: 'Strutture addominali visibili. Fegato di dimensioni normali...'
+      status: 'Bozza'
     },
     {
       id: 3,
-      title: 'Controllo Tiroide - Micio',
-      patient: 'Micio',
-      date: '2024-01-13',
-      status: 'Condiviso',
-      type: 'Endocrinologica',
-      preview: 'Tiroide di aspetto normale, dimensioni nella norma...'
+      title: 'Eco Toracica - Rocky',
+      patient: 'Rocky (Pastore Tedesco)',
+      date: '13 Gen 2024',
+      type: 'Toracica',
+      status: 'Inviato'
     }
   ];
 
-  const handleViewReport = (report: any) => {
-    setSelectedReport(report);
-  };
-
-  const handleCreateReport = () => {
-    onReportCompleted?.();
-  };
-
-  const handleEditReport = (report: any) => {
-    // Logic per modificare referto
-    console.log('Modifica referto:', report.id);
-  };
-
-  const handleShareReport = (report: any) => {
-    onReportShared?.();
-    console.log('Condividi referto:', report.id);
-  };
-
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'Completato':
-        return 'bg-green-100 text-green-700 border-green-200';
-      case 'Bozza':
-        return 'bg-yellow-100 text-yellow-700 border-yellow-200';
-      case 'Condiviso':
-        return 'bg-blue-100 text-blue-700 border-blue-200';
-      default:
-        return 'bg-slate-100 text-slate-700 border-slate-200';
-    }
-  };
-
   if (selectedReport) {
     return (
-      <div className="h-full flex flex-col bg-white">
-        {/* Header referto */}
-        <div className="bg-white border-b border-slate-200 p-4">
-          <div className="flex items-center justify-between mb-4">
-            <Button
-              variant="ghost"
-              onClick={() => setSelectedReport(null)}
-              className="text-slate-600 hover:text-slate-800"
-            >
-              ← Indietro
-            </Button>
-            <div className="flex space-x-2">
-              <Button
-                onClick={() => handleEditReport(selectedReport)}
-                className="bg-blue-600 hover:bg-blue-700 text-white px-6"
-              >
-                <Edit3 className="w-4 h-4 mr-2" />
-                Modifica
-              </Button>
-              <Button
-                onClick={() => handleShareReport(selectedReport)}
-                variant="outline"
-                className="border-blue-200 text-blue-600 hover:bg-blue-50 px-6"
-              >
-                <Share className="w-4 h-4 mr-2" />
-                Condividi
-              </Button>
-            </div>
-          </div>
-          
-          <div>
-            <h1 className="text-2xl font-bold text-slate-800 mb-2">{selectedReport.title}</h1>
-            <div className="flex items-center space-x-4 text-sm text-slate-600">
-              <span>Paziente: {selectedReport.patient}</span>
-              <span>•</span>
-              <span>{selectedReport.date}</span>
-              <Badge className={getStatusColor(selectedReport.status)}>
-                {selectedReport.status}
-              </Badge>
-            </div>
-          </div>
+      <div className="h-full bg-white flex flex-col">
+        {/* Header */}
+        <div className="bg-white border-b-2 border-gray-200 px-6 py-4 flex items-center shadow-sm">
+          <Button
+            variant="ghost"
+            onClick={() => setSelectedReport(null)}
+            className="mr-4 p-3 hover:bg-gray-100 rounded-full"
+          >
+            <ArrowLeft className="w-6 h-6" />
+          </Button>
+          <h1 className="text-2xl font-bold text-gray-800">Referto</h1>
         </div>
 
-        {/* Content referto */}
-        <div className="flex-1 overflow-y-auto p-6">
-          <div className="max-w-4xl mx-auto bg-white">
-            <div className="prose prose-slate max-w-none">
-              <h2>Referto Ecografico</h2>
-              <p><strong>Paziente:</strong> {selectedReport.patient}</p>
-              <p><strong>Data esame:</strong> {selectedReport.date}</p>
-              <p><strong>Tipo esame:</strong> {selectedReport.type}</p>
-              
-              <h3>Descrizione</h3>
-              <p>{selectedReport.preview}</p>
-              
-              <h3>Reperti</h3>
-              <ul>
-                <li>Strutture anatomiche nella norma</li>
-                <li>Nessuna alterazione patologica evidente</li>
-                <li>Vascolarizzazione regolare</li>
-              </ul>
-              
-              <h3>Conclusioni</h3>
-              <p>Esame ecografico nei limiti della norma per età e specie. Si consiglia controllo di routine tra 6 mesi.</p>
-              
-              <h3>Raccomandazioni</h3>
-              <p>Continuare terapia in corso. Controllo clinico tra 30 giorni.</p>
+        {/* Report Preview */}
+        <div className="flex-1 p-6 overflow-y-auto">
+          <div className="max-w-4xl mx-auto">
+            {/* Report Header */}
+            <div className="bg-gray-50 rounded-3xl p-8 mb-6">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-2xl font-bold text-gray-800">{selectedReport.title}</h2>
+                <span className={`px-4 py-2 rounded-full text-lg font-medium ${
+                  selectedReport.status === 'Completato' ? 'bg-green-100 text-green-800' :
+                  selectedReport.status === 'Bozza' ? 'bg-yellow-100 text-yellow-800' :
+                  'bg-blue-100 text-blue-800'
+                }`}>
+                  {selectedReport.status}
+                </span>
+              </div>
+              <div className="grid grid-cols-2 gap-6 text-lg">
+                <div>
+                  <span className="text-gray-600">Paziente:</span>
+                  <span className="ml-2 font-medium">{selectedReport.patient}</span>
+                </div>
+                <div>
+                  <span className="text-gray-600">Data:</span>
+                  <span className="ml-2 font-medium">{selectedReport.date}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Report Content */}
+            <div className="bg-white border-2 border-gray-200 rounded-3xl p-8 mb-6">
+              <h3 className="text-xl font-bold text-gray-800 mb-4">Referto Ecografico</h3>
+              <div className="space-y-4 text-lg text-gray-700">
+                <p><strong>Esame richiesto:</strong> Ecocardiografia completa</p>
+                <p><strong>Tecnica:</strong> Scansione transtorcica con sonda 2-5 MHz</p>
+                <p><strong>Reperti:</strong></p>
+                <ul className="list-disc list-inside ml-4 space-y-2">
+                  <li>Ventricolo sinistro: dimensioni nella norma</li>
+                  <li>Funzione sistolica: conservata</li>
+                  <li>Valvole cardiache: competenti</li>
+                  <li>Atri: dimensioni regolari</li>
+                </ul>
+                <p><strong>Conclusioni:</strong> Quadro ecocardiografico nella norma.</p>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="grid grid-cols-2 gap-4">
+              <Button className="h-16 text-xl bg-blue-500 hover:bg-blue-600 text-white rounded-2xl">
+                <Edit className="w-6 h-6 mr-3" />
+                Modifica
+              </Button>
+              <Button className="h-16 text-xl bg-green-500 hover:bg-green-600 text-white rounded-2xl">
+                <Share className="w-6 h-6 mr-3" />
+                Condividi
+              </Button>
             </div>
           </div>
         </div>
@@ -152,81 +110,48 @@ const ReportsApp = ({ onReportCompleted, onReportShared }: ReportsAppProps) => {
   }
 
   return (
-    <div className="h-full flex flex-col bg-gradient-to-br from-slate-50 to-blue-50">
+    <div className="h-full bg-white flex flex-col">
       {/* Header */}
-      <div className="bg-white border-b border-slate-200 p-4">
-        <h1 className="text-2xl font-bold text-slate-800">Referti</h1>
-        <p className="text-slate-600">Gestisci i referti dei tuoi pazienti</p>
+      <div className="bg-white border-b-2 border-gray-200 px-6 py-4 flex items-center justify-between shadow-sm">
+        <h1 className="text-2xl font-bold text-gray-800">Referti</h1>
       </div>
 
-      {/* Lista referti */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-3">
-        {reports.map((report) => (
-          <Card 
-            key={report.id}
-            className="cursor-pointer hover:shadow-md transition-all duration-200 hover:scale-[1.01] border-slate-200"
-            onClick={() => handleViewReport(report)}
-          >
-            <CardContent className="p-4">
-              <div className="flex items-start justify-between">
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center space-x-2 mb-2">
-                    <FileText className="w-5 h-5 text-blue-600 flex-shrink-0" />
-                    <h3 className="text-lg font-semibold text-slate-800 truncate">
-                      {report.title}
-                    </h3>
-                    <Badge className={getStatusColor(report.status)}>
-                      {report.status}
-                    </Badge>
-                  </div>
-                  
-                  <div className="flex items-center text-sm text-slate-600 mb-2">
-                    <Calendar className="w-4 h-4 mr-1" />
-                    <span>{report.date}</span>
-                    <span className="mx-2">•</span>
-                    <span>{report.type}</span>
-                  </div>
-                  
-                  <p className="text-sm text-slate-500 line-clamp-2">
-                    {report.preview}
-                  </p>
-                </div>
-
-                <div className="ml-4 flex flex-col space-y-2">
-                  <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      handleViewReport(report);
-                    }}
-                    className="w-20"
-                  >
-                    <Eye className="w-4 h-4 mr-1" />
-                    Vedi
-                  </Button>
-                </div>
+      {/* Reports List */}
+      <div className="flex-1 p-6 overflow-y-auto">
+        <div className="max-w-4xl mx-auto space-y-4">
+          {mockReports.map((report) => (
+            <button
+              key={report.id}
+              onClick={() => setSelectedReport(report)}
+              className="w-full bg-white border-2 border-gray-200 rounded-3xl p-6 hover:border-blue-500 hover:shadow-lg transition-all duration-200 text-left"
+            >
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-xl font-bold text-gray-800">{report.title}</h3>
+                <span className={`px-4 py-2 rounded-full text-sm font-medium ${
+                  report.status === 'Completato' ? 'bg-green-100 text-green-800' :
+                  report.status === 'Bozza' ? 'bg-yellow-100 text-yellow-800' :
+                  'bg-blue-100 text-blue-800'
+                }`}>
+                  {report.status}
+                </span>
               </div>
-            </CardContent>
-          </Card>
-        ))}
-
-        {reports.length === 0 && (
-          <div className="text-center py-12">
-            <FileText className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-            <p className="text-slate-500">Nessun referto trovato</p>
-          </div>
-        )}
+              <div className="grid grid-cols-3 gap-4 text-lg text-gray-600">
+                <div className="flex items-center">
+                  <Calendar className="w-5 h-5 mr-2" />
+                  {report.date}
+                </div>
+                <div>{report.patient}</div>
+                <div className="text-right">{report.type}</div>
+              </div>
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* Floating Action Button */}
-      <div className="fixed bottom-24 right-6">
-        <Button
-          onClick={handleCreateReport}
-          size="lg"
-          className="w-16 h-16 rounded-full bg-blue-600 hover:bg-blue-700 shadow-lg hover:shadow-xl transition-all duration-200"
-        >
-          <Plus className="w-8 h-8 text-white" />
+      <div className="absolute bottom-24 right-6">
+        <Button className="w-16 h-16 bg-blue-500 hover:bg-blue-600 text-white rounded-full shadow-lg">
+          <Plus className="w-8 h-8" />
         </Button>
       </div>
     </div>

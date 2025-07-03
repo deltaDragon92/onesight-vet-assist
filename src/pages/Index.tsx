@@ -238,14 +238,100 @@ const Index = () => {
       </header>
 
       {/* Step Navigation */}
-       {/* Content dei pannelli, senza barra degli step */}
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6">
-        {activeTab === 'dashboard' && <Dashboard onStartNewVisit={handleStartNewVisit} />}
-        {activeTab === 'digitaltwin' && <DigitalTwin onPatientSelected={handlePatientSelected} />}
-        {activeTab === 'exam' && <UltrasoundExam onExamCompleted={handleExamCompleted} />}
-        {activeTab === 'reports' && <ReportModule onReportCompleted={handleReportCompleted} onReportShared={handleReportShared} />}
-        {activeTab === 'petowner' && <PetOwnerPreview />}
-        {activeTab === 'sidebar' && renderSidebarContent()}
+      <div className="bg-white dark:bg-slate-800 border-b border-slate-200 dark:border-slate-700">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <Tabs value={activeTab} onValueChange={handleTabChange} className="w-full">
+            <TabsList className="grid w-full grid-cols-5 bg-slate-50 dark:bg-slate-700 p-1 h-16">
+              {steps.map((step, index) => {
+                const stepStatus = getStepStatus(step.id);
+                const isLocked = stepStatus === 'locked';
+                const isCompleted = stepStatus === 'completed';
+                const isActive = activeTab === step.id;
+
+                return (
+                  <Tooltip key={step.id}>
+                    <TooltipTrigger asChild>
+                      <TabsTrigger 
+                        value={step.id}
+                        disabled={isLocked}
+                        className={`
+                          flex flex-col items-center justify-center space-y-1 text-xs font-medium h-14 relative
+                          ${isLocked 
+                            ? 'opacity-50 cursor-not-allowed' 
+                            : 'data-[state=active]:bg-white data-[state=active]:text-blue-600 data-[state=active]:shadow-sm'
+                          }
+                          ${isCompleted ? 'bg-green-50 text-green-700' : ''}
+                          ${isActive && !isCompleted ? 'bg-blue-50 text-blue-700' : ''}
+                        `}
+                      >
+                        <div className={`flex items-center justify-center relative ${
+                          isCompleted ? 'text-green-600' : 
+                          isActive ? 'text-blue-600' : 
+                          isLocked ? 'text-slate-400' : 'text-slate-600'
+                        }`}>
+                          {isLocked ? (
+                            <Lock className="w-4 h-4" />
+                          ) : isCompleted ? (
+                            <div className="w-5 h-5 bg-green-500 rounded-full flex items-center justify-center">
+                              <Check className="w-3 h-3 text-white" />
+                            </div>
+                          ) : (
+                            step.icon
+                          )}
+                        </div>
+                        <span className="hidden sm:inline text-center leading-tight">
+                          {step.label}
+                        </span>
+                        
+                        {/* Progress indicator */}
+                        {index < steps.length - 1 && (
+                          <div className={`absolute right-0 top-1/2 w-8 h-0.5 transform translate-x-full -translate-y-1/2 ${
+                            getStepStatus(steps[index + 1].id) !== 'locked' ? 'bg-green-400' : 'bg-slate-300'
+                          }`} />
+                        )}
+                      </TabsTrigger>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      <div className="text-center">
+                        <p className="font-medium">{step.label}</p>
+                        <p className="text-xs text-slate-500">{step.description}</p>
+                        {isLocked && (
+                          <p className="text-xs text-orange-600 mt-1">
+                            Completa lo step precedente per sbloccare
+                          </p>
+                        )}
+                        {isCompleted && (
+                          <p className="text-xs text-green-600 mt-1">
+                            ✓ Step completato
+                          </p>
+                        )}
+                      </div>
+                    </TooltipContent>
+                  </Tooltip>
+                );
+              })}
+            </TabsList>
+
+            <TabsContent value="dashboard" className="mt-0">
+              <Dashboard onStartNewVisit={handleStartNewVisit} />
+            </TabsContent>
+            <TabsContent value="digitaltwin" className="mt-0">
+              <DigitalTwin onPatientSelected={handlePatientSelected} />
+            </TabsContent>
+            <TabsContent value="exam" className="mt-0">
+              <UltrasoundExam onExamCompleted={handleExamCompleted} />
+            </TabsContent>
+            <TabsContent value="reports" className="mt-0">
+              <ReportModule onReportCompleted={handleReportCompleted} onReportShared={handleReportShared} />
+            </TabsContent>
+            <TabsContent value="petowner" className="mt-0">
+              <PetOwnerPreview />
+            </TabsContent>
+            <TabsContent value="sidebar" className="mt-0">
+              {renderSidebarContent()}
+            </TabsContent>
+          </Tabs>
+        </div>
       </div>
 
       {/* Terminate Visit Confirmation Dialog */}
