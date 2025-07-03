@@ -47,7 +47,7 @@ const Index = () => {
     },
     {
       id: 'digitaltwin',
-      label: 'Cartella clinica',
+      label: 'Gemello Digitale',
       icon: <div className="w-5 h-5 bg-gradient-to-r from-cyan-500 to-teal-500 rounded-full"></div>,
       description: 'Scheda paziente e storico'
     },
@@ -59,13 +59,13 @@ const Index = () => {
     },
     {
       id: 'reports',
-      label: 'Referto',
+      label: 'Referti',
       icon: <FileText className="w-5 h-5" />,
       description: 'Refertazione assistita'
     },
     {
       id: 'petowner',
-      label: 'Anteprima referto',
+      label: 'Pet Owner',
       icon: <Clock className="w-5 h-5" />,
       description: 'Vista per proprietari'
     }

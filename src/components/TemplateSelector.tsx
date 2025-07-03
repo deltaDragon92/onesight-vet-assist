@@ -113,7 +113,9 @@ const TemplateSelector = ({ isOpen, onClose, onSelect }: TemplateSelectorProps) 
               <Stethoscope className="w-6 h-6 text-blue-600" />
               <span>Template Referto</span>
             </DialogTitle>
-            
+            <Button variant="ghost" size="icon" onClick={onClose}>
+              <X className="w-4 h-4" />
+            </Button>
           </div>
         </DialogHeader>
         
