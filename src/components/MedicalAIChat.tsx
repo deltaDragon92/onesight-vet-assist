@@ -168,9 +168,7 @@ Vuoi che generi il testo completo per una sezione specifica del referto?`
                 <p className="text-sm text-slate-600 font-normal">Assistente per diagnostica veterinaria</p>
               </div>
             </DialogTitle>
-            <Button variant="ghost" size="icon" onClick={onClose}>
-              <X className="w-4 h-4" />
-            </Button>
+            
           </div>
           
           {selectedBlockId && (

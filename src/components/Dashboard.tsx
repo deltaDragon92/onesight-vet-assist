@@ -70,9 +70,6 @@ const Dashboard = ({ onStartNewVisit }: DashboardProps) => {
 
   return (
     <div className="p-6 space-y-6">
-      {/* Start New Visit Button */}
-      <div className="flex justify-center">
-      </div>
 
       {/* Quick Stats */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
@@ -105,8 +102,8 @@ const Dashboard = ({ onStartNewVisit }: DashboardProps) => {
               <p className="text-slate-600 text-sm mb-4">{action.description}</p>
               <Button 
                 variant="outline" 
-                className="w-full border-slate-200 hover:bg-slate-50 group-hover:border-blue-300 transition-colors"
                 onClick={handleStartNewVisit}
+                className="w-full border-slate-200 hover:bg-slate-50 group-hover:border-blue-300 transition-colors"
               >
                 Inizia
               </Button>
