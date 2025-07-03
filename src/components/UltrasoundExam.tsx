@@ -314,7 +314,6 @@ const UltrasoundExam = ({
                       {isVideoPlaying ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
                     </Button>
                     <div className="bg-black/50 px-3 py-1 rounded text-white text-sm font-mono">
-                      {formatTime(videoTime)} LIVE
                     </div>
                   </div>
                 </CardContent>
