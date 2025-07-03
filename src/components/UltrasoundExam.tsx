@@ -64,7 +64,7 @@ const UltrasoundExam = ({ onExamCompleted }: UltrasoundExamProps) => {
 
   const [aiGuidanceActive, setAiGuidanceActive] = useState(false);
   const [detectedStructures, setDetectedStructures] = useState([]);
-  const [examCompleted, setExamCompleted] = useState(true);
+  const [examCompleted, setExamCompleted] = useState(false);
   const [aiGuidanceMode, setAiGuidanceMode] = useState(false);
   const [isVideoPlaying, setIsVideoPlaying] = useState(true);
   const [videoTime, setVideoTime] = useState(0);
@@ -139,6 +139,10 @@ const UltrasoundExam = ({ onExamCompleted }: UltrasoundExamProps) => {
     setAiGuidanceActive(false);
   };
 
+  const handleRecord = () => {
+    setIsRecording(!isRecording);
+  };
+
   const handleCompleteExam = () => {
     setExamCompleted(true);
     onExamCompleted?.();
@@ -161,7 +165,6 @@ const UltrasoundExam = ({ onExamCompleted }: UltrasoundExamProps) => {
     return `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
   };
 
-  
   return (
     <div className="p-6 space-y-6">
       {/* Main Exam Interface */}
@@ -169,7 +172,6 @@ const UltrasoundExam = ({ onExamCompleted }: UltrasoundExamProps) => {
         {/* Video Display Area */}
         <Card className="lg:col-span-3 bg-slate-100 shadow-lg">
           <CardContent className="p-0 relative">
-             <div className="absolute top-4 right-4 flex items-center space-x-2 z-10">
             <div className="aspect-video bg-gradient-to-br from-slate-100 to-slate-200 relative overflow-hidden flex items-center justify-center">
               {/* Info Panel - Default State */}
               {!aiGuidanceMode && (
@@ -323,14 +325,14 @@ const UltrasoundExam = ({ onExamCompleted }: UltrasoundExamProps) => {
               className="text-red-600 border-red-200 hover:bg-red-50"
             >
               <X className="w-4 h-4 mr-2" />
-              Esci da Guida AI
+              Esci Guida AI
             </Button>
           </div>
 
           {/* Main Content */}
           <div className="flex-1 p-6 flex flex-col md:flex-row gap-4 overflow-hidden">
             {/* Video Panel */}
-            <div className="flex-[2] min-w-0 h-[90vh] md:h-auto">
+            <div className="flex-[2] min-w-0 h-[60vh] md:h-auto">
               <Card className="h-full bg-[#0F1013] border-slate-700 shadow-lg">
                 <CardContent className="p-0 h-full relative">
                   <video
