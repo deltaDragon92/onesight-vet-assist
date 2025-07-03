@@ -288,7 +288,7 @@ const UltrasoundExam = ({
             <h1 className="text-2xl font-semibold text-slate-800">Guida AI</h1>
             <Button onClick={handleExitAIGuidance} variant="outline" className="text-red-600 border-red-200 hover:bg-red-50">
               <X className="w-4 h-4 mr-2" />
-              Esci da Guida AI
+              Termina
             </Button>
           </div>
 
