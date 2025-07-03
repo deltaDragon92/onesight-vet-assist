@@ -290,6 +290,11 @@ const UltrasoundExam = ({
               <X className="w-4 h-4 mr-2" />
               Termina
             </Button>
+
+            <Button onClick={handleExitAIGuidance} variant="outline" className="text-black-600 border-black-200 hover:bg-grey-50">
+              <X className="w-4 h-4 mr-2" />
+              Salva
+            </Button>
           </div>
 
           {/* Main Content */}
