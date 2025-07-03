@@ -213,7 +213,7 @@ const Index = () => {
                   variant="outline"
                   size="sm"
                   onClick={handleTerminateVisit}
-                  className="text-white-600 border-white-200 hover:bg-white-50"
+                  className="text-white-600 border-white-200 hover:bg-red-50"
                 >
                   <X className="w-4 h-4 mr-1" />
                   Termina Visita
